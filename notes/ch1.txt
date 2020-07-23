@@ -1,0 +1,158 @@
+FINAL MODIFIER
+---------------
+Marking a variable final means the value cannot be changed after it is assigned. Marking a method or class final means it cannot be overridden or extended, respectively.
+
+We don't need to assign a value when a final variable is declared. The rule is only that it must be assigned a value before it can be used. 
+
+The compiler does not allow the use of local variables that may not have been assigned a value, whether they are marked final or not.
+
+Just because a variable reference is marked final does not mean the object associated with it cannot be modified. 
+
+Instance and static class variables can also be marked final. If an instance variable is marked final, then it must be assigned a value when it is declared or when the object is instantiated.
+
+Methods marked final cannot be overridden by a subclass. This essentially prevents any polymorphic behavior on the method call and ensures that a specific version of the method is always called.
+
+Like we saw with final methods, classes cannot be marked both abstract and final. 
+
+Interface are also not allowed to be final. The compiler automatically applies the implicit abstract modifier to each interface declaration. Just like abstract classes, interfaces cannot be marked final.
+
+WORKING WITH ENUMS
+-------------------
+
+Enumerations show up whenever you have a set of items whose types are known at compile time. Common examples include the compass directions, the months of the year, the planets in the solar system, or the cards in a deck.
+
+Behind the scenes, an enum is a type of class that mainly contains static members.
+
+Another useful feature is retrieving an enum value from a String using the valueOf() method.
+
+One thing that you can't do is extend an enum.
+
+Enum can contain Constructor, Fields and Methods
+
+NESTED CLASSES
+---------------
+Types: Non-Static Inner class, Static Inner class, Local class, Anonymous class
+
+Interfaces and enums can be declared as both inner classes and static nested classes, but not as local or anonymous classes.
+
+Rules for non-static inner class
+
+* Can be declared public, protected, package-private (default), or private
+* Can extend any class and implement interfaces
+* Can be marked abstract or final
+* Cannot declare static fields or methods, except for static final fields
+* Can access members of the outer class including private members
+
+Since an inner class is not static, it has to be used with an instance of the outer class.
+
+To create an instance of inner class in static method of outer class. First we need to create an instance of outer class in outer static method and then
+using this instance of outer class we can create an instance of inner class. But this rule does not apply to non-static methods of outer class. Non-static
+outer class can just class new InnerClass(); to create a inner class object.
+
+For multiple level of inner class following is a way to instinatiate inner class. 
+e.g
+OuterClass-->Level1_InnerClass-->Level2_InnerClass
+
+To instinatiate Level1_InnerClass use following syntax
+Level1_InnerClass level1 = outerclass_obj.new Level1_InnerClass();
+or
+OuterClass.Level1_InnerClass level1 = outerclass_obj.new Level1_InnerClass();
+
+To instinatiate Level2_InnerClass use following syntax
+OuterClass.Level1_InnerClass.Level2_InnerClass level2 = level1.new() Level2_InnerClass();
+or
+Level1_InnerClass.Level2_InnerClass level2 = level1.new() Level2_InnerClass();
+
+Rules for static inner class
+
+* The nesting creates a namespace because the enclosing class name must be used to refer to it.
+* It can be made private or use one of the other access modifiers to encapsulate it.
+* The enclosing class can refer to the fields and methods of the static nested class.
+
+A local class is a nested class defined within a method. Like local variables, a local class declaration does not exist until the method is invoked, and it goes out of scope when the method returns. This means you can create instances only from within the method. Those instances can still be returned from the method. 
+
+Rules for local class
+* They do not have an access modifier.
+* They cannot be declared static and cannot declare static fields or methods, except for static final fields.
+* They have access to all fields and methods of the enclosing class (when defined in an instance method).
+* They can access local variables if the variables are final or effectively final.
+
+Reason for local class can access only final or effectively final local variables. 
+The compiler is generating a .class file from your local class. A separate class has no way to refer to local variables. If the local variable is final, Java can handle it by passing it to the constructor of the local class or by storing it in the .class file. If it weren't effectively final, these tricks wouldn't work because the value could change after the copy was made.
+
+Anonymous classes are required to extend an existing class or implement an existing interface.
+
+Remember that an anonymous class is just an unnamed local class.
+
+With anonymous class, we cannot implement a interface and extends a class at same time.
+
+With anonymous class You can define them right where they are needed, even if that is an argument to another method.
+
+Table 1.1, 1.2, 1.3 important for exams
+
+INTERFACE MEMBERS
+-----------------
+
+Table 1.4 summary of interface member types
+
+A default method is a method defined in an interface with the default keyword and includes a method body. A default method may be overridden by a class implementing the interface.
+
+A default method allows you to add a new method to an existing interface, without the need to modify older code that implements the interface.
+
+Another motivation for adding default methods to Java is for convenience. If all classes implementing an interface method would have a common implementation, then makes sense to provide a default implementation of that method.
+
+Rules for using Default methods
+
+* A default method may be declared only within an interface.
+* A default method must be marked with the default keyword and include a method body.
+* A default method is assumed to be public.
+* A default method cannot be marked abstract, final, or static.
+* A default method may be overridden by a class that implements the interface.
+* If a class inherits two or more default methods with the same method signature, then the class must override the method.  
+
+Default method cannot be marked as final, because they can always be overridden in classes implementing the interface.
+
+Default method cannot be marked static since they are associated with the instance of the class implementing the interface.
+
+If the class implementing the interfaces overrides the duplicate default method, then the code will compile without issue.
+
+If a class implementing multiple interfaces 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
