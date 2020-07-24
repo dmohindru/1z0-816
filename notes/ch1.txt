@@ -49,7 +49,7 @@ To create an instance of inner class in static method of outer class. First we n
 using this instance of outer class we can create an instance of inner class. But this rule does not apply to non-static methods of outer class. Non-static
 outer class can just class new InnerClass(); to create a inner class object.
 
-For multiple level of inner class following is a way to instinatiate inner class. 
+For multiple level of inner class following is a way to instantiate inner class. 
 e.g
 OuterClass-->Level1_InnerClass-->Level2_InnerClass
 
@@ -65,7 +65,7 @@ Level1_InnerClass.Level2_InnerClass level2 = level1.new() Level2_InnerClass();
 
 Rules for static inner class
 
-* The nesting creates a namespace because the enclosing class name must be used to refer to it.
+* The nesting creates a name-space because the enclosing class name must be used to refer to it.
 * It can be made private or use one of the other access modifiers to encapsulate it.
 * The enclosing class can refer to the fields and methods of the static nested class.
 
@@ -116,12 +116,68 @@ Default method cannot be marked static since they are associated with the instan
 
 If the class implementing the interfaces overrides the duplicate default method, then the code will compile without issue.
 
-If a class implementing multiple interfaces 
+If a class implementing multiple interfaces wants to access default method of particular interface following syntax is used
+InterestedInterface.super.defaultMethodName(); and this call must be in instance method and not static method.
 
+Rules for using static interface methods
 
+* A static method must be marked with the static keyword and include a method body.
+* A static method without an access modifier is assumed to be public.
+* A static method cannot be marked abstract or final.
+* A static method is not inherited and cannot be accessed in a class implementing the interface without a reference to the interface name.
 
+A class that implements two interfaces containing static methods with the same signature will still compile.
 
+private interface methods can be used to reduce code duplication.
 
+Private Interface Method Definition Rules
+* A private interface method must be marked with the private modifier and include a method body.
+* A private interface method may be called only by default and private (non- static) methods within the interface definition.
+
+Purpose of private static interface methods is to reduce code duplication in static methods within the interface declaration. 
+
+Private Static Interface Method Definition Rules
+* A private static method must be marked with the private and static modifiers and include a method body.
+* A private static interface method may be called only by other methods within the interface definition.
+
+Both private and private static methods can be called from default and private methods.
+
+Using private interface methods doesn't just provide a way to reduce code duplication, but also a way to hide some of the underlying implementation details from users of the interface and thus improving encapsulation.
+
+When working with interfaces, we consider abstract, default, and private interface methods as instance methods.
+
+A key distinction, though, is that interfaces do not implement constructors and are not part of the class hierarchy. While a class can implement multiple interfaces, it can only directly extend a single class.
+
+FUNCTIONAL INTERFACE
+---------------------
+
+A functional interface is an interface that contains a single abstract method. 
+
+If a functional interface includes an abstract method with the same signature as a public method found in Object, then those methods do not count toward the single abstract method test.
+
+The left side of the lambda expression lists the variables. It must be compatible with the type and number of input parameters of the functional interface's single abstract method.
+
+The right side of the lambda expression represents the body of the expression. It must be compatible with the return type of the functional interface's abstract method.
+
+Lambda syntax omitting optional part
+a -> a.canHop();
+
+Lambda syntax including optional part
+(Animal a) -> {return a.canHop();}
+
+As a fun fact, s -> {} is a valid lambda. If the return type of the functional interface method is void, then you don't need the semicolon or return statement.
+
+In lambda expression if the parameter type is specified for one of the parameters, then it must be specified for all of them.
+
+Variables can appear in three places with respect to lambdas: the parameter list, local variables declared inside the lambda body, and variables referenced from the lambda body. All three of these are opportunities for the exam to trick you.
+
+If var is used for one of the types in the parameter list, then it must be used for all parameters in the list.
+
+For local variable inside a lambda expression we cannot use it if were defined in any outside block e.g parameter list of lambda, local variable of inclosing method or argument of inclosing method.
+
+Lambda bodies are allowed to use static variables, instance variables, and local variables if they are final or effectively final. 
+
+Instance variables are allowed if the lambda is used inside an instance method.  
 
 
 
