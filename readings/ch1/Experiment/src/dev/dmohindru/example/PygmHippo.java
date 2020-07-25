@@ -2,6 +2,7 @@ package dev.dmohindru.example;
 
 abstract class Animal {
     abstract void chew();
+
 }
 
 class Hippo extends Animal {
@@ -18,4 +19,4 @@ class PygmyHippo extends Hippo {
 
 final class Eagle {}  // DOES NOT COMPILE
 
-interface Hawk {}        // DOES NOT COMPILE
+interface Hawk {default void hello() {}}        // DOES NOT COMPILE

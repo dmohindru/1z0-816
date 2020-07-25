@@ -16,6 +16,16 @@ Like we saw with final methods, classes cannot be marked both abstract and final
 
 Interface are also not allowed to be final. The compiler automatically applies the implicit abstract modifier to each interface declaration. Just like abstract classes, interfaces cannot be marked final.
 
+The final modifier can be applied to classes, but not interfaces.
+
+abstract key word is incompatible with final.
+
+var and final can be used together.
+
+Effectively final refers to local variables whose value is not changed after it is set. Hence effectively final is not applicable to instance and static variables
+
+
+
 WORKING WITH ENUMS
 -------------------
 
@@ -28,6 +38,15 @@ Another useful feature is retrieving an enum value from a String using the value
 One thing that you can't do is extend an enum.
 
 Enum can contain Constructor, Fields and Methods
+
+We mark the instance variable final although this is certainly not required, it is considered a good coding practice to do so. 
+
+Static member variables of enum?
+
+It is legal for initialize enum variable to null
+e.g MyEnum myEnum = null; // it is a legal statement
+
+When an enum contains any other members, such as a constructor or variable, then semiconductor it is required.
 
 NESTED CLASSES
 ---------------
@@ -47,7 +66,7 @@ Since an inner class is not static, it has to be used with an instance of the ou
 
 To create an instance of inner class in static method of outer class. First we need to create an instance of outer class in outer static method and then
 using this instance of outer class we can create an instance of inner class. But this rule does not apply to non-static methods of outer class. Non-static
-outer class can just class new InnerClass(); to create a inner class object.
+outer class method can just class new InnerClass(); to create a inner class object.
 
 For multiple level of inner class following is a way to instantiate inner class. 
 e.g
@@ -63,11 +82,24 @@ OuterClass.Level1_InnerClass.Level2_InnerClass level2 = level1.new() Level2_Inne
 or
 Level1_InnerClass.Level2_InnerClass level2 = level1.new() Level2_InnerClass();
 
+Outer class can access all the members of non-static inner class including its private members
+
 Rules for static inner class
 
 * The nesting creates a name-space because the enclosing class name must be used to refer to it.
 * It can be made private or use one of the other access modifiers to encapsulate it.
 * The enclosing class can refer to the fields and methods of the static nested class.
+
+static inner class cannot access the instance member of enclosing class. To access these instance variable enclosing class need to be instantiate in static inner class.
+
+
+static inner class can have static methods and variables just like any main level class.
+
+To instantiate a inner static class following syntax is used.
+StaticInnerClass staticInner = new OuterClass.StaticInnerClass();
+
+Outer class can access all the members of static inner class including its private members
+
 
 A local class is a nested class defined within a method. Like local variables, a local class declaration does not exist until the method is invoked, and it goes out of scope when the method returns. This means you can create instances only from within the method. Those instances can still be returned from the method. 
 
@@ -80,6 +112,8 @@ Rules for local class
 Reason for local class can access only final or effectively final local variables. 
 The compiler is generating a .class file from your local class. A separate class has no way to refer to local variables. If the local variable is final, Java can handle it by passing it to the constructor of the local class or by storing it in the .class file. If it weren't effectively final, these tricks wouldn't work because the value could change after the copy was made.
 
+private members of local class are not accessible outside of class. 
+
 Anonymous classes are required to extend an existing class or implement an existing interface.
 
 Remember that an anonymous class is just an unnamed local class.
@@ -88,10 +122,16 @@ With anonymous class, we cannot implement a interface and extends a class at sam
 
 With anonymous class You can define them right where they are needed, even if that is an argument to another method.
 
+To reference an instance variable from a local class the syntax is as below
+EnclosingClass.this.instanceVariableOfClass;
+
+
 Table 1.1, 1.2, 1.3 important for exams
 
 INTERFACE MEMBERS
 -----------------
+
+Interface variable are assumed to static, final and public.
 
 Table 1.4 summary of interface member types
 
@@ -106,7 +146,7 @@ Rules for using Default methods
 * A default method may be declared only within an interface.
 * A default method must be marked with the default keyword and include a method body.
 * A default method is assumed to be public.
-* A default method cannot be marked abstract, final, or static.
+* A default method cannot be marked abstract, final, private or static.
 * A default method may be overridden by a class that implements the interface.
 * If a class inherits two or more default methods with the same method signature, then the class must override the method.  
 
@@ -115,6 +155,9 @@ Default method cannot be marked as final, because they can always be overridden 
 Default method cannot be marked static since they are associated with the instance of the class implementing the interface.
 
 If the class implementing the interfaces overrides the duplicate default method, then the code will compile without issue.
+
+An interface can extend multiple interface at once.
+e.g. public interface MyInterface extends InterfaceOne, InterfaceTwo {} is a valid statement. Like in class, interface extending more than one interface with a duplicate default method need to override that default method in its body. 
 
 If a class implementing multiple interfaces wants to access default method of particular interface following syntax is used
 InterestedInterface.super.defaultMethodName(); and this call must be in instance method and not static method.
@@ -127,6 +170,8 @@ Rules for using static interface methods
 * A static method is not inherited and cannot be accessed in a class implementing the interface without a reference to the interface name.
 
 A class that implements two interfaces containing static methods with the same signature will still compile.
+
+Like classes, interfaces allow instance methods to access static members, but not vice versa. static methods cannot access instance methods like default and abstract method.
 
 private interface methods can be used to reduce code duplication.
 
@@ -147,6 +192,8 @@ Using private interface methods doesn't just provide a way to reduce code duplic
 When working with interfaces, we consider abstract, default, and private interface methods as instance methods.
 
 A key distinction, though, is that interfaces do not implement constructors and are not part of the class hierarchy. While a class can implement multiple interfaces, it can only directly extend a single class.
+
+Inner interface a by default static
 
 FUNCTIONAL INTERFACE
 ---------------------
@@ -177,38 +224,9 @@ For local variable inside a lambda expression we cannot use it if were defined i
 
 Lambda bodies are allowed to use static variables, instance variables, and local variables if they are final or effectively final. 
 
-Instance variables are allowed if the lambda is used inside an instance method.  
+Instance variables are allowed if the lambda is used inside an instance method.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+final modifier is permitted on variables in the parameter list of lambda expression.
 
 
 

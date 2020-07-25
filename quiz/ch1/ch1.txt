@@ -1,0 +1,58 @@
+Attempt 1
+1. A, D 
+-- CORRECT --
+2. C
+-- CORRECT --
+3. C, D, E
+-- INCORRECT --
+4. A, B, F
+-- INCORRECT --
+5. B, D
+-- CORRECT --
+6. C, E
+-- CORRECT --
+7. E
+-- INCORRECT --
+8. A, C
+-- CORRECT --
+9. C, D, F
+-- INCORRECT --
+10. C    <- REVIEW
+-- INCORRECT --
+11. A <- REVIEW
+-- INCORRECT --
+12. C
+-- CORRECT --
+13. E, G <- REVIEW (implicit static key for interface variables)
+-- CORRECT --
+14. E <- REVIEW (Protected inner class)
+-- CORRECT --
+15. G
+-- CORRECT --
+Because enum does not have a default implementation of isHealty() method
+16. Transport, train, Boat (A, D, E)
+-- CORRECT --
+17. B
+-- INCORRECT --
+18. B, C, H <- REVIEW
+-- INCORRECT --
+19. D
+-- CORRECT --
+20. A, B, C, D, E, F
+-- INCORRECT --
+21. B, D, E
+-- INCORRECT --
+22. D, F
+-- CORRECT --
+23. A, C <- REVIEW
+-- INCORRECT --
+Boolean.FALSE <- is it valid  
+24. E
+-- CORRECT --
+25. F <- REVIEW
+-- INCORRECT --
+SCORE: 13 / 25 (52%)
+
+Current read - Ques 16
+
+
