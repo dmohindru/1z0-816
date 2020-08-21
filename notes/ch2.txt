@@ -1,0 +1,44 @@
+ANNOTATIONS
+-----------
+Annotations solved this by having the data and the information about the data defined in the same location. 
+
+That brings us to our first rule about annotations: annotations function a lot like interfaces. In this example, annotations allow us to mark a class as a ZooAnimal without changing its inheritance structure.
+
+So if annotations function like interfaces, why don't we just use interfaces? While interfaces can be applied only to classes, annotations can be applied to any declaration including classes, methods, expressions, and even other annotations. Also, unlike interfaces, annotations allow us to pass a set of values where they are applied.
+
+That brings us to our second rule about annotations: annotations establish relationships that make it easier to manage data about our application. Sure, we could write applications without annotations, but that often requires creating a lot of extra classes, interfaces, or data files (XML, JSON, etc.) to manage these complex relationships. 
+
+This brings us to our third rule about annotations: an annotation ascribes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
+
+There's one final rule about annotations you should be familiar with: annotations are optional metadata and by themselves do not do anything. This means you can take a project filled with thousands of annotations and remove all of them, and it will still compile and run, albeit with potentially different behavior at runtime.
+
+While an annotation can be removed from a class and it will still compile, the opposite is not true; adding an annotation can trigger a compiler error. 
+
+CREATING CUSTOM ANNOTATIONS
+---------------------------
+
+When using a marker annotation, parentheses are optional. Once we start adding elements, though, they are required if the annotation includes any values.
+
+If an annotation is declared on a line by itself, then it applies to the next nonannotation type found on the proceeding lines.
+
+Annotation names are case sensitive. Like class and interface names, it is common practice to have them start with an uppercase letter, although it is not required.
+
+Behind the scenes, the JVM is creating annotation elements as interface methods and annotations as implementations of these interfaces.
+
+Providing an optional elements: First, when we have more than one element value within an annotation, we separate them by a comma (,). Next, each element is written using the syntax elementName = elementValue. It's like a shorthand for a Map. Also, the order of each element does not matter. Cheetah could have listed hoursPerDay first.
+
+Similar to case statement values, the default value of an annotation must be a non- null constant expression.
+
+An annotation element cannot be declared with just any type. It must be a primitive type, a String, a Class, an enum, another annotation, or an array of any of these types. While primitive types like int and long are supported, wrapper classes like Integer and Long are not. The type String[] is supported, as it is an array of String values, but String[][] is not.
+
+Like abstract interface methods, annotation elements are implicitly abstract and public, whether you declare them that way or not. The elements material() and friendly() do not compile because the access modifier conflicts with the elements being implicitly public. The element isBunny() does not compile because, like abstract methods, it cannot be marked final.
+
+Annotations can include constant variables that can be accessed by other classes without actually creating the annotation. Just like interface variables, annotation variables are implicitly public, static, and final.
+
+Remember, a marker annotation is one that does not contain any elements.
+
+
+APPLYING ANNOTATIONS
+--------------------
+
+
