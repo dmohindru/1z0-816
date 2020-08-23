@@ -40,5 +40,98 @@ Remember, a marker annotation is one that does not contain any elements.
 
 APPLYING ANNOTATIONS
 --------------------
+Annotations can be applied to any Java declaration including the following:
 
+- Classes, interfaces, enums, and modules
+- Variables (static, instance, local)
+- Methods and constructors
+- Method, constructor, and lambda parameters
+- Cast expressions
+- Other annotations
+
+In this example, we applied annotations to various declarations, but this isn't always permitted. An annotation can specify which declaration type they can be applied to using the @Target annotation.
+
+When applying an annotation to an expression, a cast operation including the Java type is required. 
+
+The following is valid syntax under the right condition:
+@Injured("Broken Tail") public class Monkey {}
+
+An annotation must adhere to the following rules to be used without a name:
+
+- The annotation declaration must contain an element named value(), which may be optional or required.
+- The annotation declaration must not contain any other elements that are required.
+- The annotation usage must not provide values for any other elements.
+
+Annotations support a shorthand notation for providing an array that contains a single element.
+Lets say: 
+public @interface Music {
+   String[] genres();
+}
+Following are valid way to apply this annotatoin
+public class Giraffe {
+@Music(genres={"I love you"}) public String track1;
+@Music(generes="I love you") public String track2;
+}
+
+Following are invalid way to apply this annotation
+public class Giraffe {
+@Music(genres="I love you", "rock and roll") public String track1; // will not compile
+@Music(generes=) public String track2;			     // will not compile
+@Music(generes=null) public String track3;			     // will not compile
+@Music(generes={}) public String track4;			     // will compile
+
+}
+
+
+
+
+DECLARING ANNOTATION-SPECIFIC ANNOTATIONS
+-----------------------------------------
+Many annotation declarations include @Target annotation, which limits the types the annotation can be applied to. More specifically, the @Target annotation takes an array of ElementType enum values as its value() element.
+Values for the @Target annotation
+TYPE			Classes, interfaces, enums, annotations
+FIELD			Instance and static variables, enum values
+METHOD			Method declarations
+PARAMETER		Constructor, method, and lambda parameters
+CONSTRUCTOR		Constructor declarations
+LOCAL_VARIABLE		Local variables
+ANNOTATION_TYPE	Annotations
+PACKAGE *		Packages declared in package-info.java
+TYPE_PARAMETER *	Parameterized types, generic declarations
+TYPE_USE		Able to be applied anywhere there is a Java type declared or used
+MODULE *		Modules
+* Applying these with annotations is out of scope for the exam.
+
+While most of the values in Table 2.1 are straightforward, TYPE_USE is without a doubt the most complex. The TYPE_USE parameter can be used anywhere there is a Java type. There are a few exceptions; for example, it can be used only on a method that returns a value. Methods that return void would still need the METHOD value defined in the annotation.
+
+Annotations may be discarded by the compiler or at runtime. We say “may,” because we can actually specify how they are handled using the @Retention annotation. This annotation takes a value() of the enum RetentionPolicy.
+Possible values, in increasing order of retention.
+SOURCE			Used only in the source file, discarded by the compiler
+CLASS			Stored in the .class file but not available at runtime (default compiler behavior)
+RUNTIME		Stored in the .class file and available at runtime
+
+You should be familiar with the marker annotation @Documented. If present, then the generated Javadoc will include annotation information defined on Java types.
+
+Another marker annotation you should know for the exam is @Inherited. When this annotation is applied to a class, subclasses will inherit the annotation information found in the parent class.
+
+The @Repeatable annotation is used when you want to specify an annotation more than once on a type. That brings us to our next rule: to declare a @Repeatable annotation, you must define a containing annotation type value.
+Rules for declaring a repeatable annotation
+- The repeatable annotation must be declared with @Repeatable and contain a value that refers to the containing type annotation.
+- The containing type annotation must include an element named value(), which is a primitive array of the repeatable annotation type.
+
+When @Target is not present, an annotation can be used in any place except TYPE_USE or TYPE_PARAMETER scenarios (cast operations, object creation, generic declarations, etc.). <-- work on this one
+
+USING COMMON ANNOTATIONS
+------------------------
+Using @Override annotations is not required, but using them incorrectly is prohibited.
+
+The @FunctionalInterface marker annotation can be applied to any valid functional interface.
+
+With @Deprecated annotation we notify our user and give them time to migrate their code to new version before this version is finally removed. Note that the @Deprecated annotation does not allow you to provide any suggested alternatives. For that, you should use the Javadoc annotation.
+
+Enter @SuppressWarnings. Applying this annotation to a class, method, or type basically tells the compiler, “I know what I am doing; do not warn me about this.” It requires a String[] value() parameter. As describe below.
+"deprecation"		Ignore warnings related to types or methods marked with the @Deprecated annotation.
+"unchecked"		Ignore warnings related to the use of raw types, such as List instead of List<String>.
+
+The @SafeVargs marker annotation indicates that a method does not perform any potential unsafe operations on its varargs parameter. It can be applied only to constructors or methods that cannot be overridden (aka methods marked private, static, or final).
 
