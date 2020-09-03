@@ -1,0 +1,177 @@
+WORKING WITH BUILT-IN FUNCTIONAL INTERFACE
+------------------------------------------
+Common functional interfaces
+
+Functional interface		Return type		Method name		# of parameters
+--------------------------------------------------------------------------------------------
+Supplier<T>			T			get()			0
+Consumer<T>			void			accept(T)		1 (T)
+BiConsumer<T, U>		void			accept(T,U)		2 (T, U)
+Predicate<T>			boolean		test(T)		1 (T)
+BiPredicate<T, U>		boolean		test(T,U)		2 (T, U)
+Function<T, R>			R			apply(T)		1 (T)
+BiFunction<T, U, R>		R			apply(T,U)		2 (T, U)
+UnaryOperator<T>		T			apply(T)		1 (T)
+BinaryOperator<T>		T			apply(T,T)		2 (T, T)
+
+A Supplier is used when you want to generate or supply values without taking any input. The Supplier interface is defined as follows:
+@FunctionalInterface
+public interface Supplier<T> {
+   T get();
+}
+
+You use a Consumer when you want to do something with a parameter but not return anything. BiConsumer does the same thing except that it takes two parameters. The interfaces are defined as follows:
+@FunctionalInterface
+public interface Consumer<T> {
+   void accept(T t);
+   // omitted default method
+}
+ @FunctionalInterface
+public interface BiConsumer<T, U> {
+   void accept(T t, U u);
+   // omitted default method
+
+A BiPredicate is just like a Predicate except that it takes two parameters instead of one. The interfaces are defined as follows:
+@FunctionalInterface
+public interface Predicate<T> {
+   boolean test(T t);
+   // omitted default and static methods
+}
+@FunctionalInterface
+public interface BiPredicate<T, U> {
+   boolean test(T t, U u);
+   // omitted default methods
+}
+
+A Function is responsible for turning one parameter into a value of a potentially different type and returning it. Similarly, a BiFunction is responsible for turning two parameters into a value and returning it. The interfaces are defined as follows:
+@FunctionalInterface
+public interface Function<T, R> {
+   R apply(T t);
+   // omitted default and static methods
+}
+@FunctionalInterface
+public interface BiFunction<T, U, R> {
+   R apply(T t, U u);
+   // omitted default method
+}
+
+UnaryOperator and BinaryOperator are a special case of a Function. They require all type parameters to be the same type. A UnaryOperator transforms its value into one of the same type. For example, incrementing by one is a unary operation. In fact, UnaryOperator extends Function. A BinaryOperator merges two values into one of the same type. Adding two numbers is a binary operation. Similarly, BinaryOperator extends BiFunction. The interfaces are defined as follows:
+
+@FunctionalInterface
+public interface UnaryOperator<T> extends Function<T, T> { }
+ 
+@FunctionalInterface
+public interface BinaryOperator<T> extends BiFunction<T, T, T> { 
+   // omitted static methods
+}
+
+Creating your own functional interface
+Java's built-in interfaces are meant to facilitate the most common functional interfaces that you'll need. It is by no means an exhaustive list. Remember that you can add any functional interfaces you'd like, and Java matches them when you use lambdas or method references.
+
+Convenience methods
+
+Interface instance		Method return type		Method name		Method parameters
+-------------------------------------------------------------------------------------------------------
+Consumer			Consumer			andThen()		Consumer
+Function			Function			andThen()		Function
+Function			Function			compose()		Function
+Predicate			Predicate			and()			Predicate
+Predicate			Predicate			negate()		—
+Predicate			Predicate			or()			Predicate
+
+Let's start with these two Predicate variables.
+
+Predicate<String> egg = s -> s.contains("egg");
+Predicate<String> brown = s -> s.contains("brown");
+
+Now we want a Predicate for brown eggs and another for all other colors of eggs. We could write this by hand, as shown here:
+Predicate<String> brownEggs = s -> s.contains("egg") && s.contains("brown");
+Predicate<String> otherEggs = s -> s.contains("egg") && ! s.contains("brown");
+
+Not a great way to code. A better way to deal with this situation is to use two of the default methods on Predicate.
+Predicate<String> brownEggs = egg.and(brown);
+Predicate<String> otherEggs = egg.and(brown.negate());
+
+Moving on to Consumer, let's take a look at the andThen() method, which runs two functional interfaces in sequence.
+Consumer<String> c1 = x -> System.out.print("1: " + x);
+Consumer<String> c2 = x -> System.out.print(",2: " + x);
+Consumer<String> combined = c1.andThen(c2);
+combined.accept("Annie");              // 1: Annie,2: Annie
+
+By contrast, the compose() method on Function chains functional interfaces. However, it passes along the output of one to the input of another.
+Function<Integer, Integer> before = x -> x + 1;
+Function<Integer, Integer> after = x -> x * 2; 
+Function<Integer, Integer> combined = after.compose(before);
+System.out.println(combined.apply(3));   // 8
+This time the before runs first, turning the 3 into a 4. Then the after runs, doubling the 4 to 8. 
+
+RETURNING AN OPTIONAL
+----------------------
+How do we express this “we don't know” or “not applicable” answer in Java? We use the Optional type. An Optional is created using a factory. You can either request an empty Optional or pass a value for the Optional to wrap. Think of an Optional as a box that might have something in it or might instead be empty.
+
+
+Optional o = (value == null) ? Optional.empty() : Optional.of(value);
+Optional o = Optional.ofNullable(value);
+
+Optional instance methods
+Method				When Optional is empty				When Optional contains a value
+---------------------------------------------------------------------------------------------------------------
+get()				Throws an exception				Returns value
+ifPresent(Consumer c)		Does nothing					Calls Consumer with value
+isPresent()			Returns false					Returns true
+orElse(T other)		Returns other parameter			Returns value
+orElseGet(Supplier s)		Returns result of calling Supplier		Returns value
+orElseThrow()			Throws NoSuchElementException			Returns value
+orElseThrow(Supplier s)	Throws exception created by calling Supplier	Returns value
+
+USING STREAMS
+-------------
+With streams, the data isn't generated up front—it is created when needed. This is an example of lazy evaluation, which delays execution until necessary. Many things can happen in the assembly line stations along the way. In functional programming, these are called stream operations.
+
+There are three parts to a stream pipeline, as shown in Figure 4.2.
+1. Source: Where the stream comes from
+2, Intermediate operations: Transforms the stream into another one. There can be as few or as many intermediate operations as you'd like. Since streams use lazy evaluation, the intermediate operations do not run until the terminal operation runs.
+3. Terminal operation: Actually produces a result. Since streams can be used only once, the stream is no longer valid after a terminal operation completes.
+
+
+Intermediate vs. terminal operations
+Scenario					Intermediate operation		Terminal operation
+------------------------------------------------------------------------------------------------
+Required part of a useful pipeline?		No				Yes
+Can exist multiple times in a pipeline?	Yes				No
+Return type is a stream type?			Yes				No
+Executed upon method call?			No				Yes
+Stream valid after call?			Yes				No
+
+For simplicity, we'll start with finite streams. There are a few ways to create them.
+11: Stream<String> empty = Stream.empty();          // count = 0
+12: Stream<Integer> singleElement = Stream.of(1);   // count = 1
+13: Stream<Integer> fromArray = Stream.of(1, 2, 3); // count = 3
+
+Java also provides a convenient way of converting a Collection to a stream.
+14: var list = List.of("a", "b", "c");
+15: Stream<String> fromList = list.stream();
+
+It is just as easy to create a parallel stream from a list.
+24: var list = List.of("a", "b", "c");
+25: Stream<String> fromListParallel = list.parallelStream();
+
+Infinite Streams: So far, this isn't particularly impressive. We could do all this with lists. We can't create an infinite list, though, which makes streams more powerful.
+
+17: Stream<Double> randoms = Stream.generate(Math::random); // generate infinite stream of random numbers 
+18: Stream<Integer> oddNumbers = Stream.iterate(1, n -> n + 2); // generate infinite stream of odd number
+19: Stream<Integer> oddNumbers = Stream.iterate(1, n -> n < 100, n -> n + 2); // generate stream of odd numbers less than 100.
+
+Stream Creation Methods
+Method				Finite or infinite?		Notes
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Stream.empty()			Finite				Creates Stream with zero elements
+Stream.of(varargs)		Finite				Creates Stream with elements listed
+coll.stream()			Finite				Creates Stream from a Collection
+coll.parallelStream()		Finite				Creates Stream from a Collection where the stream can run in parallel
+Stream.generate(supplier)	Infinite			Creates Stream by calling the Supplier for each element upon request
+Stream.iterate(seed, 
+unaryOperator)			Infinite			Creates Stream by using the seed for the first element and then calling the UnaryOperator for 									each subsequent element upon request
+Stream.iterate(seed, 
+predicate, unaryOperator)	Finite or Infinite		Creates Stream by using the seed for the first element and then calling the UnaryOperator for 									each subsequent element upon request. Stops if the Predicate returns false
+

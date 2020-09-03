@@ -1,0 +1,455 @@
+USING METHOD REFERENCES
+------------------------
+Remember that :: is like a lambda, and it is used for deferred execution with a functional interface.
+
+There are four formats for method references:
+1. Static methods
+2. Instance methods on a particular instance
+3. Instance methods on a parameter to be determined at runtime
+4. Constructors
+
+With both lambdas and method references, Java is inferring information from the context. In this case, we said that we were declaring a Consumer, which takes only one parameter. Java looks for a method that matches that description.
+
+Method Reference Table
+Type						Before colon			After colon		Example
+----------------------------------------------------------------------------------------------------------------------
+Static methods					Class name			Method name		Collections::sort
+Instance methods on a particular object	Instance variable name		Method name		str::startsWith
+Instance methods on a parameter		Class name			Method name		String::isEmpty
+Constructor					Class name			new			ArrayList::new
+
+
+USING WRAPPER CLASSES
+----------------------
+Speaking of null, one advantage of a wrapper class over a primitive is that it can hold a null value. For example, if you are storing a user's location data using (latitude, longitude), it would be a bad idea to store a missing point as (0,0) since that refers to an actual location off the cost of Africa where the user could theoretically be.
+
+USING DIAMOND OPERATOR
+----------------------
+The diamond operator is a shorthand notation that allows you to omit the generic type from the right side of a statement when the type can be inferred. It is called the diamond operator because <> looks like a diamond.
+
+e.g.
+List<Integer> list = new ArrayList<>();
+Map<String,Integer> map = new HashMap<>();
+Map<Long,List<Integer>> mapOfLists = new HashMap<>();
+
+Since var is new to Java, let's look at the impact of using var with the diamond operator. Do you think these two statements compile and are equivalent?
+var list = new ArrayList<Integer>(); // Infers to type ArrayList of Integer
+var list = new ArrayList<>();	  // Infers to type ArrayList of Object
+
+USING LISTS, SETS, MAPS, AND QUEUES
+-----------------------------------
+A collection is a group of objects contained in a single object. The Java Collections Framework is a set of classes in java.util for storing collections. There are four main interfaces in the Java Collections Framework.
+1. List: A list is an ordered collection of elements that allows duplicate entries. Elements in a list can be accessed by an int index.
+2. Set: A set is a collection that does not allow duplicate entries.
+3. Queue: A queue is a collection that orders its elements in a specific order for processing. A typical queue processes its elements in a first-in, first-out order, but other orderings are possible.
+4. Map: A map is a collection that maps keys to values, with no duplicate keys allowed. The elements in a map are key/value pairs.
+
+Figure 3.1 for various interface and concrete classes for collection framework.
+
+Common collection methods
+boolean add(E element)
+boolean remove(Object object)
+Java does not allow removing elements from a list while using the enhanced for loop.
+boolean isEmpty()
+int size()
+void clear()
+boolean contains(Object object)
+boolean removeIf(Predicate<? super E> filter)
+removeIf section of this chapter contains a very interesting example where we can use method reference or not. refer book for this purpose
+void forEach(Consumer<? super T> action)
+
+You use a list when you want an ordered collection that can contain duplicate entries. Items can be retrieved and inserted at specific positions in the list based on an int index much like an array. Unlike an array, though, many List implementations can change in size after they are declared.
+
+The main benefit of an ArrayList is that you can look up any element in constant time. Adding or removing an element is slower than accessing an element. This makes an ArrayList a good choice when you are reading more often than (or the same amount as) writing to the ArrayList.
+
+A LinkedList is special because it implements both List and Queue. It has all the methods of a List. It also has additional methods to facilitate adding or removing from the beginning and/or end of the list. The trade-off is that dealing with an arbitrary index takes linear time.
+
+Factory methods to create a List
+Method				Description						Can add elements?	Can replace element?	Can delete elements?
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Arrays.asList(varargs)		Returns fixed size list backed by an array		No			Yes			No
+List.of(varargs)		Returns immutable list					No			No			No
+List.copyOf(collection)	Returns immutable list with copy of original 
+				collection's values					No			No			No
+
+A quick way to print an array Arrays.toString(array), rather than using traditional or enhanced for loop.
+
+List methods
+Method					Description
+---------------------------------------------------------------------------------------------------
+boolean add(E element)			Adds element to end (available on all Collection APIs)
+void add(int index, E element)	Adds element at index and moves the rest toward the end
+E get(int index)			Returns element at index
+E remove(int index)			Removes element at index and moves the rest toward the front
+void replaceAll(UnaryOperator<E> op)	Replaces each element in the list with the result of the operator
+E set(int index, E e)			Replaces element at index and returns original. Throws IndexOutOfBoundsException if the index is larger than the 						maximum one set
+
+Using the Set Interface
+A HashSet stores its elements in a hash table, which means the keys are a hash and the values are an Object. This means that it uses the hashCode() method of the objects to retrieve them more efficiently. The main benefit is that adding elements and checking whether an element is in the set both have constant time. The trade-off is that you lose the order in which you inserted the elements. 
+
+A TreeSet stores its elements in a sorted tree structure. The main benefit is that the set is always in sorted order. The trade-off is that adding and checking whether an element exists take longer than with a HashSet, especially as the tree grows larger.
+
+Like List, you can create an immutable Set in one line or make a copy of an existing one.
+Set<Character> letters = Set.of('z', 'o', 'o');
+Set<Character> copy = Set.copyOf(letters);
+
+For Sets equals() method is used to determine equality. The hashCode() method is used to know which bucket to look in so that Java doesn't have to look through the whole set to find out whether an object is there. The best case is that hash codes are unique, and Java has to call equals() on only one object. The worst case is that all implementations return the same hashCode(), and Java has to call equals() on every element of the set anyway.
+
+The main benefit of a LinkedList is that it implements both the List and Queue interfaces. The trade-off is that it isn't as efficient as a “pure” queue. You can use the ArrayDeque class (short for double-ended queue) if you need a more efficient queue. However, ArrayDeque is not in scope for the exam.
+
+Queue methods
+Method			Description										Throws exception on failure
+----------------------------------------------------------------------------------------------------------------------------------------
+boolean add(E e)	Adds an element to the back of the queue and returns true or throws an exception	Yes
+E element()		Returns next element or throws an exception if empty queue				Yes
+boolean offer(E e)	Adds an element to the back of the queue and returns whether successful		No
+E remove()		Removes and returns next element or throws an exception if empty queue		Yes
+E poll()		Removes and returns next element or returns null if empty queue			No
+E peek()		Returns next element or returns null if empty queue					No
+
+
+Important: Interface List, Queue, Set inherits from Collection interface so all methods of collection interface is available in all these sub interface. Exam may try to trick you by give a program which has methods of collection accessed through as of its sub interface. 
+
+
+Using the Map Interface
+
+Just like List and Set, there is a helper method to create a Map. You pass any number of pairs of keys and values.
+Map.of("key1", "value1", "key2", "value2");
+Unlike List and Set, this is less than ideal. Suppose you miscount and leave out a value.
+Map.of("key1", "value1", "key2"); // INCORRECT
+
+Luckily, there is a better way. Map also provides a method that lets you supply key/value pairs.
+Map.ofEntries(
+   Map.entry("key1", "value1"),
+   Map.entry("key1", "value1"));
+
+Conveniently, Map.copyOf(map) works just like the List and Set interface copyOf() methods.
+
+A HashMap stores the keys in a hash table. This means that it uses the hashCode() method of the keys to retrieve their values more efficiently.
+The main benefit is that adding elements and retrieving the element by key both have constant time. The trade-off is that you lose the order in which you inserted the elements.
+
+A TreeMap stores the keys in a sorted tree structure. The main benefit is that the keys are always in sorted order. Like a TreeSet, the trade-off is that adding and checking whether a key is present takes longer as the tree grows larger.
+
+Map methods
+Method							Description
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+void clear()						Removes all keys and values from the map.
+boolean containsKey(Object key)			Returns whether key is in map.
+boolean containsValue(Object value)			Returns whether value is in map.
+Set<Map.Entry<K,V>> entrySet()			Returns a Set of key/value pairs.
+void forEach(BiConsumer(K key, V value))		Loop through each key/value pair.
+V get(Object key)					Returns the value mapped by key or null if none is mapped.
+V getOrDefault(Object key, V defaultValue)		Returns the value mapped by the key or the default value if none is mapped.
+boolean isEmpty()					Returns whether the map is empty.
+Set<K> keySet()					Returns set of all keys.
+V merge(K key, V value, Function(<V, V, V> func))	Sets value if key not set. Runs the function if the key is set to determine the new value. Removes if 								null.
+V put(K key, V value)					Adds or replaces key/value pair. Returns previous value or null.
+V putIfAbsent(K key, V value)				Adds value if key not present and returns null. Otherwise, returns existing value.
+V remove(Object key)					Removes and returns value mapped to key. Returns null if none.
+V replace(K key, V value)				Replaces the value for a given key if the key is set. Returns the original value or null if none.
+void replaceAll(BiFunction<K, V, V> func)		Replaces each value with the results of the function.
+int size()						Returns the number of entries (key/value pairs) in the map.
+Collection<V> values()					Returns Collection of all values.
+
+For HashMap, Java uses the hashCode() of the key to determine the order. The order here happens to not be sorted order, or the order in which we typed the values.
+
+TreeMap sorts the keys as we would expect. If we were to have called values() instead of keySet(), the order of the values would correspond to the order of the keys.
+
+You saw the forEach() method earlier in the chapter. Note that it works a little differently on a Map. This time, the lambda used by the forEach() method has two parameters; the key and the value.
+
+Behavior of the merge() method
+If the requested key ________		And mapping function returns ________		Then:
+------------------------------------------------------------------------------------------------------------------------------------
+Has a null value in map		N/A (mapping function not called)		Update key's value in map with value parameter.
+Has a non- null value in map		null						Remove key from map.
+Has a non- null value in map		A non- null value				Set key to mapping function result.
+Is not in map				N/A (mapping function not called)		Add key with value parameter to map directly without calling mapping 											function.
+
+Java Collections Framework types
+Type		Can contain duplicate elements?	Elements always ordered?		Has keys and values?	Must add/remove in specific order?
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+List		Yes					Yes (by index)				No			No
+Map		Yes (for values)			No					Yes			No
+Queue		Yes					Yes (retrieved in defined order)	No			Yes
+Set		No					No					No			No
+
+Collection attributes
+Type		Java Collections Framework interface	Sorted?	Calls hashCode?	Calls compareTo?
+-------------------------------------------------------------------------------------------------------------
+ArrayList	List					No		No			No
+HashMap	Map					No		Yes			No
+HashSet	Set					No		Yes			No
+LinkedList	List, Queue				No		No			No
+TreeMap	Map					Yes		No			Yes
+TreeSet	Set					Yes		No			Yes
+
+
+Next, the exam expects you to know which data structures allow null values. The data structures that involve sorting do not allow null values.
+
+
+SORTING DATA
+------------
+As far as the exam is concerned, that means numbers sort before letters, and uppercase letters sort before lowercase letters.
+
+Comparable and Comparator are similar enough to be tricky. The exam likes to see if it can trick you into mixing up the two.
+
+public interface Comparable<T> {
+   int compareTo(T o);
+}
+
+We still need to know what the compareTo() method returns so that we can write our own. There are three rules to know.
+1. The number 0 is returned when the current object is equivalent to the argument to compareTo().
+2. A negative number (less than 0) is returned when the current object is smaller than the argument to compareTo().
+3. A positive number (greater than 0) is returned when the current object is larger than the argument to compareTo().
+
+When dealing with legacy code or code that does not use generics, the compareTo() method requires a cast since it is passed an Object.
+
+When writing your own compare methods, you should check the data before comparing it if is not validated ahead of time (check if its not null).
+
+You are strongly encouraged to make your Comparable classes consistent with equals because not all collection classes behave predictably if the compareTo() and equals() methods are not consistent.
+
+Comparator is a functional interface since there is only one abstract method to implement. This means that we can rewrite the comparator on lines 18-22 using a lambda expression, as shown here:
+Comparator<Duck> byWeight = (d1, d2) -> d1.getWeight()-d2.getWeight();
+
+Alternatively, we can use a method reference and a helper method to specify we want to sort by weight.
+Comparator<Duck> byWeight = Comparator.comparing(Duck::getWeight);
+
+We said that Comparator is a functional interface because it has a single abstract method. Comparable is also a functional interface since it also has a single abstract method. However, using a lambda for Comparable would be silly. The point of Comparable is to implement it inside the object being compared.
+
+Comparison of Comparable and Comparator
+Difference						Comparable		Comparator
+-----------------------------------------------------------------------------------------
+Package name						java.lang		java.util
+Interface must be implemented by class comparing?	Yes			No
+Method name in interface				compareTo()		compare()
+Number of parameters					1			2
+Common to declare using a lambda			No			Yes
+
+Memorize this table—really. The exam will try to trick you by mixing up the two and seeing if you can catch it. Do you see why this one doesn't compile?
+var byWeight = new Comparator<Duck>() { // DOES NOT COMPILE
+   public int compareTo(Duck d1, Duck d2) {
+      return d1.getWeight()-d2.getWeight();
+   }
+};
+The method name is wrong. A Comparator must implement a method named compare(). Pay special attention to method names and the number of parameters when you see Comparator and Comparable in questions.
+
+When writing a Comparator that compares multiple instance variables, the code gets a little messy.
+Alternatively, we can use method references and build the comparator. This code represents logic for the same comparison.
+Comparator<Squirrel> c = Comparator.comparing(Squirrel::getSpecies).thenComparingInt(Squirrel::getWeight);
+
+Suppose we want to sort in descending order by species.
+var c = Comparator.comparing(Squirrel::getSpecies).reversed();
+
+Helper static methods for building a Comparator
+Method				Description
+---------------------------------------------------------------------------------------------------------------------------------
+comparing(function)		Compare by the results of a function that returns any Object (or object autoboxed into an Object).
+comparingDouble(function)	Compare by the results of a function that returns a double.
+comparingInt(function)		Compare by the results of a function that returns an int.
+comparingLong(function)	Compare by the results of a function that returns a long.
+naturalOrder()			Sort using the order specified by the Comparable implementation on the object itself.
+reverseOrder()			Sort using the reverse of the order specified by the Comparable implementation on the object itself.
+
+Helper default methods for building a Comparator
+Method				Description
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+reversed()			Reverse the order of the chained Comparator.
+thenComparing(function)	If the previous Comparator returns 0, use this comparator that returns an Object or can be autoboxed into one.
+thenComparingDouble(function)	If the previous Comparator returns 0, use this comparator that returns a double. Otherwise, return the value from the previous 					Comparator.
+thenComparingInt(function)	If the previous Comparator returns 0, use this comparator that returns an int. Otherwise, return the value from the previous 					Comparator.
+thenComparingLong(function)	If the previous Comparator returns 0, use this comparator that returns a long. Otherwise, return the value from the previous 					Comparator.
+
+Remember that a Comparator is useful when you want to specify sort order without using a compareTo() method.
+
+The sort() and binarySearch() methods allow you to pass in a Comparator object when you don't want to use the natural order.
+When TreeSet tries to sort it, Java discovers the fact that Rabbit does not implement Comparable. Java throws an exception that looks like this:
+Exception in thread "main" java.lang.ClassCastException: 
+   class Duck cannot be cast to class java.lang.Comparable 
+It may seem weird for this exception to be thrown when the first object is added to the set. After all, there is nothing to compare yet. Java works this way for consistency.
+
+Just like searching and sorting, you can tell collections that require sorting that you want to use a specific Comparator, for example:
+Set<Rabbit> rabbits = new TreeSet<>((r1, r2) -> r1.id-r2.id);
+rabbits.add(new Rabbit());
+
+WORKING WITH GENERICS
+---------------------
+Generics fix this by allowing you to write and use parameterized types. You specify that you want an ArrayList of String objects. Now the compiler has enough information to prevent you from causing this problem in the first place.
+
+Naming Conventions for Generics
+A type parameter can be named anything you want. The convention is to use single uppercase letters to make it obvious that they aren't real class names. The following are common letters to use:
+E for an element
+K for a map key
+V for a map value
+N for a number
+T for a generic data type
+S, U, V, and so forth for multiple generic types
+
+Generic classes become useful when the classes used as the type parameter can have absolutely nothing to do with each other. The Crate class works with any type of class. Before generics, we would have needed Crate to use the Object class for its instance variable, which would have put the burden on the caller of needing to cast the object it receives on emptying the crate.
+
+Just like a class, an interface can declare a formal type parameter. For example, the following Shippable interface uses a generic type as the argument to its ship() method:
+public interface Shippable<T> {
+   void ship(T t);
+}
+The following concrete class says that it deals only with robots. 
+class ShippableRobotCrate implements Shippable<Robot> {
+   public void ship(Robot t) { }
+}
+
+The next way is to create a generic class. The following concrete class allows the caller to specify the type of the generic:
+class ShippableAbstractCrate<U> implements Shippable<U> {
+   public void ship(U t) { }
+}
+
+What You Can't Do with Generic Types
+Most of the limitations are due to type erasure. Oracle refers to types whose information is fully available at runtime as reifiable. Reifiable types can do anything that Java allows.
+
+Here are the things that you can't do with generics (and by “can't,” we mean without resorting to contortions like passing in a class object):
+
+1. Calling a constructor: Writing new T() is not allowed because at runtime it would be new Object().
+2. Creating an array of that generic type: This one is the most annoying, but it makes sense because you'd be creating an array of Object values.
+3. Calling instanceof: This is not allowed because at runtime List<Integer> and List<String> look the same to Java thanks to type erasure.
+4. Using a primitive type as a generic type parameter: This isn't a big deal because you can use the wrapper class instead. If you want a type of int, just use Integer.
+5. Creating a static variable as a generic type parameter: This is not allowed because the type is linked to the instance of the class.
+
+In this example, both methods use a generic parameter:
+public class Handler {
+   public static <T> void prepare(T t) {
+      System.out.println("Preparing " + t);
+   }
+   public static <T> Crate<T> ship(T t) {
+      System.out.println("Shipping " + t);
+      return new Crate<T>();
+   }
+}
+
+The method parameter is the generic type T. Before the return type, we declare the formal type parameter of <T>. In the ship() method, we show how you can use the generic parameter in the return type, Crate<T>, for the method.
+
+When you have a method declare a generic parameter type, it is independent of the class generics. Take a look at this class that declares a generic T at both levels:
+1: public class Crate<T> {
+2:    public <T> T tricky(T t) {
+3:       return t;
+4:    }
+5: }
+Here T referred at line 1 is different from T at line 2. e.g
+10: public static String createName() {
+11:    Crate<Robot> crate = new Crate<>();
+12:    return crate.tricky("bot");
+13: }
+At line 11 T referred to Robot class and at Line 12 T refers to String class.
+
+Optional Syntax for Invoking a Generic Method
+You can call a generic method normally, and the compiler will try to figure out which one you want. Alternatively, you can specify the type explicitly to make it obvious what the type is.
+    Box.<String>ship("package");
+    Box.<String[]>ship(args);
+As to whether this makes things clearer, it is up to you. You should at least be aware that this syntax exists.
+
+By now, you might have noticed that generics don't seem particularly useful since they are treated as an Object and therefore don't have many methods available. Bounded wildcards solve this by restricting what types can be used in a wildcard.
+
+A wildcard generic type is an unknown generic type represented with a question mark (?). You can use generic wildcards in three ways, as shown
+Type of bound			Syntax			Example
+-------------------------------------------------------------------------------------------------------------------
+Unbounded wildcard		?			List<?> a = new ArrayList<String>();
+Wildcard with an upper bound	? extends type		List<? extends Exception> a = new ArrayList<RuntimeException>();
+Wildcard with a lower bound	? super type		List<? super Exception> a = new ArrayList<Object>();
+
+An unbounded wildcard represents any data type. You use ? when you want to specify that any type is okay with you. We cannot assign a List<String> to a List<Object>. That's fine; we don't really need a List<Object>. What we really need is a List of “whatever.” That's what List<?> is. The following code does what we expect:
+public static void printList(List<?> list) {
+for (Object x: list)
+   System.out.println(x);
+}
+public static void main(String[] args) {
+   List<String> keywords = new ArrayList<>();
+   keywords.add("java");
+   printList(keywords);
+}
+
+Finally, let's look at the impact of var. Do you think these two statements are equivalent?
+
+List<?> x1 = new ArrayList<>();
+var x2 = new ArrayList<>();
+They are not. There are two key differences. First, x1 is of type List, while x2 is of type ArrayList. Additionally, we can only assign x2 to a List<Object>. These two variables do have one thing in common. Both return type Object when calling the get() method. Here x1 is of type capture type, therefore
+x2 = x1; // WILL NOT COMPILE
+x1 = x2; // WILL COMPILE
+
+We've established that a generic type can't just use a subclass.
+ArrayList<Number> list = new ArrayList<Integer>(); // DOES NOT COMPILE
+Instead, we need to use a wildcard.
+List<? extends Number> list = new ArrayList<Integer>();
+The upper-bounded wildcard says that any class that extends Number or Number itself can be used as the formal parameter type:
+
+Something interesting happens when we work with upper bounds or unbounded wildcards. The list becomes logically immutable and therefore cannot be modified. The problem stems from the fact that Java doesn't know what type List<? extends Bird> really is. It could be List<Bird> or List<Sparrow> or some other generic type that hasn't even been written yet.
+
+Now let's try an example with an interface. We have an interface and two classes that implement it.
+
+interface Flyer { void fly(); }
+class HangGlider implements Flyer { public void fly() {} }
+class Goose implements Flyer { public void fly() {} }
+
+We also have two methods that use it. One just lists the interface, and the other uses an upper bound.
+private void anyFlyer(List<Flyer> flyer) {}
+private void groupOfFlyers(List<? extends Flyer> flyer) {}
+
+You already learned that a variable of type List<Flyer> can be passed to either method(anyFlyer and groupOfFlyers). A variable of type List<Goose> can be passed only to the one with the upper bound(groupOfFlyers).
+
+Let's try to write a method that adds a string “quack” to two lists.
+List<String> strings = new ArrayList<String>();
+strings.add("tweet");
+ 
+List<Object> objects = new ArrayList<Object>(strings);
+addSound(strings);
+addSound(objects);
+
+Why we need a lower bound
+Like in upper bound generics list is immutable type, but lower bound generics is mutable. See table 3.15
+
+With a lower bound, we are telling Java that the list will be a list of String objects or a list of some objects that are a superclass of String. Either way, it is safe to add a String to that list.
+
+-- important section, need some research on it --
+When you have subclasses and superclasses, lower bounds can get tricky.
+    3: List<? super IOException> exceptions = new ArrayList<Exception>();
+    4: exceptions.add(new Exception()); // DOES NOT COMPILE
+    5: exceptions.add(new IOException());
+    6: exceptions.add(new FileNotFoundException());
+Line 3 references a List that could be List<IOException> or List<Exception> or List<Object>. Line 4 does not compile because we could have a List<IOException> and an Exception object wouldn't fit in there.
+
+Line 5 is fine. IOException can be added to any of those types. Line 6 is also fine. FileNotFoundException can also be added to any of those three types. This is tricky because FileNotFoundException is a subclass of IOException, and the keyword says super.
+
+Passing Generic Arguments -- quite tricky topic reread it and experiment with it
+
+<T> T first(List<? extends T> list) {
+   return list.get(0);
+}
+The first method, first(), is a perfectly normal use of generics. It uses a method-specific type parameter, T. It takes a parameter of List<T>, or some subclass of T, and it returns a single object of that T type.
+
+<T> <? extends T> second(List<? extends T> list) { // DOES NOT COMPILE
+   return list.get(0);
+}
+The next method, second(), does not compile because the return type isn't actually a type. 
+
+<B extends A> B third(List<B> list) {
+   return new B(); // DOES NOT COMPILE
+}
+This method, third(), does not compile. <B extends A> says that you want to use B as a type parameter just for this method and that it needs to extend the A class. Coincidentally, B is also the name of a class. It isn't a coincidence. It's an evil trick. Within the scope of the method, B can represent class A, B, or C, because all extend the A class. Since B no longer refers to the B class in the method, you can't instantiate it.
+
+After that, it would be nice to get something straightforward.
+
+void fourth(List<? super B> list) {}
+
+<X> void fifth(List<X super B> list) { // DOES NOT COMPILE
+}
+This last method, fifth(), does not compile because it tries to mix a method-specific type parameter with a wildcard. A wildcard must have a ? in it.
+
+// work on <B extents A> B third(List<B> list) method and <X> void fifth(List<X super B> list)
+// find rationale why new T() cannot be called.
+
+List<?> q = List.of("mouse", "parrot"); // this means it is treated as if all the elements are of type Object rather than String. 
+
+List<> list = new ArrayList<String>(); // does not compile diamond operator is allowed only on right side of expression.
+
+While you can use the diamond operator <> and the wildcard ? on variables and parameters, you cannot use them in a class declaration.
+
+We cannot initialize type variable to any other object e.g.
+class MyClass<T> {
+T t = new String(); // this will not compile
+} 
+

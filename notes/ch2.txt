@@ -29,13 +29,24 @@ Providing an optional elements: First, when we have more than one element value 
 
 Similar to case statement values, the default value of an annotation must be a non- null constant expression.
 
-An annotation element cannot be declared with just any type. It must be a primitive type, a String, a Class, an enum, another annotation, or an array of any of these types. While primitive types like int and long are supported, wrapper classes like Integer and Long are not. The type String[] is supported, as it is an array of String values, but String[][] is not.
+An annotation element cannot be declared with just any type. It must be a primitive type, a String, a Class, an enum, another annotation, or an array of any of these types. While primitive types like int and long are supported, wrapper classes like Integer and Long are not. The type String[] is supported, as it is an array of String values, but String[][] is not. e.g.
 
 Like abstract interface methods, annotation elements are implicitly abstract and public, whether you declare them that way or not. The elements material() and friendly() do not compile because the access modifier conflicts with the elements being implicitly public. The element isBunny() does not compile because, like abstract methods, it cannot be marked final.
+public @interface Fluffy {
+   int cuteness();
+   public abstract int softness() default 11;
+   protected Material material();  // DOES NOT COMPILE
+   private String friendly();      // DOES NOT COMPILE
+   final boolean isBunny();        // DOES NOT COMPILE
+}
 
 Annotations can include constant variables that can be accessed by other classes without actually creating the annotation. Just like interface variables, annotation variables are implicitly public, static, and final.
 
-Remember, a marker annotation is one that does not contain any elements.
+Remember, a marker annotation is one that does not contain any elements. e.g.
+public @interface Material {}
+
+Refer Fig 2.1 for annotation declaration rules
+Refer Fig 2.2 for using annotation rules 
 
 
 APPLYING ANNOTATIONS
@@ -61,6 +72,21 @@ An annotation must adhere to the following rules to be used without a name:
 - The annotation declaration must contain an element named value(), which may be optional or required.
 - The annotation declaration must not contain any other elements that are required.
 - The annotation usage must not provide values for any other elements.
+
+Let's create an annotation that meets these requirements.
+public @interface Injured {
+   String veterinarian() default "unassigned";
+   String value() default "foot";
+   int age() default 1;
+}
+
+This annotation can be applied in following way.
+public abstract class Elephant {
+   @Injured("Legs") public void fallDown() {}
+   @Injured(value="Legs") public abstract int trip();
+   @Injured String injuries[];
+}
+
 
 Annotations support a shorthand notation for providing an array that contains a single element.
 Lets say: 
