@@ -1,0 +1,50 @@
+REVIEWING EXCEPTIONS
+--------------------
+A try statement is used to handle exceptions. It consists of a try clause, zero or more catch clauses to handle the exceptions that are thrown, and an optional finally clause, which runs regardless of whether an exception is thrown. Figure 5.1 shows the syntax of a try statement.
+
+A traditional try statement must have at least one of the following: a catch block or a finally block. It can have more than one catch block, including multi‐catch blocks, but at most one finally block.
+
+You can also create a try‐with‐resources statement to handle exceptions. A try‐with‐resources statement looks a lot like a try statement, except that it includes a list of resources inside a set of parentheses, (). These resources are automatically closed in the reverse order that they are declared at the conclusion of the try clause. 
+
+By now, you should know the difference between throw and throws. The throw keyword means an exception is actually being thrown, while the throws keyword indicates that the method merely has the potential to throw that exception. The following example uses both:
+10: public String getDataFromDatabase() throws SQLException {
+11:    throw new UnsupportedOperationException();
+12: }
+
+Refer Figure 5.3 for category of exceptions
+
+To begin with, a checked exception must be handled or declared by the application code where it is thrown. The handle or declare rule dictates that a checked exception must be either caught in a catch block or thrown to the caller by including it in the method declaration.
+
+In Java, all exceptions that inherit Exception but not RuntimeException are considered checked exceptions.
+
+Unchecked exceptions are often referred to as runtime exceptions, although in Java unchecked exceptions include any class that inherits RuntimeException or Error. An Error is fatal, and it is considered a poor practice to catch it.
+
+Unchecked exceptions
+--------------------
+1. ArithmeticException		6. ArrayIndexOutOfBoundsException
+2. ArrayStoreException		7. ClassCastException
+3. IllegalArgumentException	8. IllegalStateException
+4. MissingResourceException	9. NullPointerException
+5. NumberFormatException	10.UnsupportedOperationException
+
+Checked exceptions
+------------------
+1. FileNotFoundException	4. IOException
+2. NotSerializableException	5. ParseException
+3. SQLException
+
+Since FileNotFoundException is a subclass of IOException, listing both in a multi‐ catch expression is redundant, resulting in a compilation error. 
+try {
+   throw new IOException();
+} catch (IOException | FileNotFoundException e) {} // DOES NOT COMPILE
+
+Ordering of exceptions in consecutive catch blocks matters too.
+try {
+   throw new IOException();
+   } catch (IOException e) {
+} catch (FileNotFoundException e) {} // DOES NOT COMPILE
+
+For the exam, remember that trying to catch a more specific exception (after already catching a broader exception) results in unreachable code and a compiler error.
+
+CREATING CUSTOM EXCEPTIONS
+--------------------------
