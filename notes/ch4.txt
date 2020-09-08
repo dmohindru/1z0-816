@@ -68,8 +68,8 @@ public interface BinaryOperator<T> extends BiFunction<T, T, T> {
 Creating your own functional interface
 Java's built-in interfaces are meant to facilitate the most common functional interfaces that you'll need. It is by no means an exhaustive list. Remember that you can add any functional interfaces you'd like, and Java matches them when you use lambdas or method references.
 
-Convenience methods
 
+By definition, all functional interfaces have a single abstract method. This doesn't mean they can have only one method, though. Several of the common functional interfaces provide a number of helpful default methods. Table below shows convenience methods
 Interface instance		Method return type		Method name		Method parameters
 -------------------------------------------------------------------------------------------------------
 Consumer			Consumer			andThen()		Consumer
@@ -109,7 +109,7 @@ RETURNING AN OPTIONAL
 ----------------------
 How do we express this “we don't know” or “not applicable” answer in Java? We use the Optional type. An Optional is created using a factory. You can either request an empty Optional or pass a value for the Optional to wrap. Think of an Optional as a box that might have something in it or might instead be empty.
 
-
+// Below two line of code does same thing
 Optional o = (value == null) ? Optional.empty() : Optional.of(value);
 Optional o = Optional.ofNullable(value);
 
@@ -247,6 +247,22 @@ The map() method creates a one-to-one mapping from the elements in the stream to
 The flatMap() method takes each element in the stream and makes any elements it contains top-level elements in a single stream. This is helpful when you want to remove empty elements from a stream or you want to combine a stream of lists.
 <R> Stream<R> flatMap(
 Function<? super T, ? extends Stream<? extends R>> mapper)
+This gibberish basically says that it returns a Stream of the type that the function contains at a lower level. Don't worry about the signature. It's a headache.
+List<String> zero = List.of();
+var one = List.of("Bonobo");
+var two = List.of("Mama Gorilla", "Baby Gorilla");
+Stream<List<String>> animals = Stream.of(zero, one, two);
+ animals.flatMap(m -> m.stream())
+   .forEach(System.out::println);
+Here's the output:
+Bonobo
+Mama Gorilla
+Baby Gorilla
+
+Link to good explanation to flatMap: https://stackoverflow.com/questions/26684562/whats-the-difference-between-map-and-flatmap-methods-in-java-8#:~:text=19%20Answers&text=Both%20map%20and%20flatMap%20can,values%20for%20each%20input%20value.
+
+Basically in flatMap's mapper argument need to return a Stream of any arbitrary type which would then be strained and put in top level Stream.
+
 
 The sorted() method returns a stream with the elements sorted. Just like sorting arrays, Java uses natural ordering unless we specify a comparator. The method signatures are these:
 Stream<T> sorted()
@@ -405,6 +421,8 @@ This one works because flatMap removes the unnecessary layer. In other words, it
 
 Refer table 4.13 for Examples of grouping/partitioning collectors
 
+grouping/partitioning collectors only work with Stream<T> only and not with Primitive streams.
+
 Collecting Using Basic Collectors
 
 Joining all elements of stream
@@ -434,6 +452,7 @@ System.out.println(map); // {lions=5, bears=5, tigers=6}
 
 Note: Returning the same value passed into a lambda is a common operation, so Java provides a method for it. You can rewrite s -> s as Function.identity(). It is not shorter and may or may not be clearer, so use your judgment on whether to use it.
 
+Following code throws exception
 var ohMy = Stream.of("lions", "tigers", "bears");
 Map<Integer, String> map = ohMy.collect(Collectors.toMap(
    String::length, 

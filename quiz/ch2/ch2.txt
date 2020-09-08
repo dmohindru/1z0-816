@@ -1,0 +1,53 @@
+Attemp1
+-------
+1. E -- correct
+
+2. D, F -- correct
+
+3. D, E -- incorrect
+
+4. C -- incorrect
+
+5. A, B, C -- incorrect
+
+6. E, G -- correct
+
+7. A, B, C, D, E, F -- correct
+
+8. B, F -- correct
+
+9. F -- incorrect
+
+10. G -- correct
+
+11. D, F -- incorrect <-- start here
+
+12. B, C, D -- correct
+
+13. A, D -- correct
+
+14. D -- correct
+
+15. A -- incorrect
+
+16. A, F -- incorrect
+
+17. A, B, C -- incorrect
+
+18. C, D, E -- incorrect
+
+19. A, F -- correct
+
+20. A, B, D, F -- incorrect
+
+21. G -- correct
+
+22. F -- correct
+
+23. B -- incorrect
+
+24. A, C, E -- incorrect
+
+25. C -- correct
+
+score: 13 / 25 = 52%

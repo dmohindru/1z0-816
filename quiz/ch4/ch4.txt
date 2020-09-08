@@ -1,0 +1,47 @@
+1. D --CORRECT--
+
+2. F --CORRECT--
+
+3. D --INCORRECT-- 
+Its a compilation error but examine its out if there is not syntax error
+
+4. A, B --CORRECT--
+
+5. A, C, D, F --INCORRECT--
+Play with this question. If its right I am proud of Dhruv
+
+6. B --INCORRECT--
+
+7. F --CORRECT--
+
+8. A, D, E --INCORRECT--
+
+9. B, D --CORRECT--
+
+10. F --CORRECT--
+
+11. B, E --INCORRECT--
+
+12. B, F, G --CORRECT--
+
+13. F --CORRECT--
+
+14. D --INCORRECT--
+
+15. B, D --CORRECT--
+
+16. B, C --CORRECT-- 
+
+17. E --CORRECT--
+
+18. D --CORRECT--
+
+19. A --CORRECT--
+
+20. A, C, E --CORRECT--
+
+21. B, C --INCORRECT--
+
+22. C, D, E, F --INCORRECT--
+
+Total: 14 / 22 = 63.63%

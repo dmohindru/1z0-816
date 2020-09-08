@@ -1,0 +1,11 @@
+- @Deprecated annotation can be applied to annotation declaration also.
+
+- Annotations should include metadata (data about data) that is relatively constant, as opposed to attribute data, which is part of the object and can change frequently. The price, sales, inventory, and people who purchased a vehicle could fluctuate often, so using an annotation would be a poor choice. On the other hand, the number of passengers a vehicle is rated for is extra information about the vehicle and unlikely to change once established.
+
+- element type must be one of the predefined immutable types: a primitive, String, Class, enum, another annotation, or an array of these types.
+
+- For @Repeatable annotation, A containing annotation type is a separate annotation that defines a value() array element.
+
+- A marker annotation is an annotation with no elements. It may or may not have constant variables.
+
+- The default retention policy for all annotations is RetentionPolicy.CLASS if not explicitly stated otherwise.
