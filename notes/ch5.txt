@@ -368,5 +368,151 @@ Like you saw earlier when working with dates, you can also create your own numbe
 
 Symbol	Meaning						Examples
 -------------------------------------------------------------------------
-#	Omit the position if no digit exists for it.		$2.2
-0	Put a 0 in the position if no digit exists for it.	$002.20
+#	Omit the position if no digit exists for it.		$2.2 (For pattern #.#)
+0	Put a 0 in the position if no digit exists for it.	$002.20 (For pattern 000.00)
+
+Like numbers, date formats can vary by locale.
+Factory methods to get a DateTimeFormatter
+
+Description				Using default Locale
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+For formatting dates			DateTimeFormatter.ofLocalizedDate(dateStyle)
+For formatting times			DateTimeFormatter.ofLocalizedTime(timeStyle)
+For formatting dates and times	DateTimeFormatter.ofLocalizedDateTime(dateStyle, timeStyle) 
+					DateTimeFormatter.ofLocalizedDateTime(dateTimeStyle)
+					
+Each method in the table takes a FormatStyle parameter, with possible values SHORT, MEDIUM, LONG, and FULL. For the exam, you are not required to know the format of each of these styles. What if you need a formatter for a specific locale? Easy enough—just append withLocale(locale) to the method call.
+
+When you call Locale.setDefault() with a locale, several display and formatting options are internally selected. If you require finer‐grained control of the default locale, Java actually subdivides the underlying formatting options into distinct categories, with the Locale.Category enum.
+
+Locale.Category values
+Value		Description
+---------------------------------------------------------------------------
+DISPLAY	Category used for displaying data about the locale
+FORMAT		Category used for formatting dates, numbers, or currencies
+
+10: public static void printCurrency(Locale locale, double money) {
+11:    System.out.println(
+12:       NumberFormat.getCurrencyInstance().format(money) 
+13:       + ", " + locale.getDisplayLanguage());
+14: }
+15: public static void main(String[] args) {
+16:    var spain = new Locale("es", "ES");
+17:    var money = 1.23;
+18: 
+19:    // Print with default locale
+20:    Locale.setDefault(new Locale("en", "US"));
+21:    printCurrency(spain, money);  // $1.23, Spanish
+22: 
+23:    // Print with default locale and selected locale display
+24:    Locale.setDefault(Category.DISPLAY, spain);
+25:    printCurrency(spain, money);  // $1.23, español
+26: 
+27:    // Print with default locale and selected locale format
+28:    Locale.setDefault(Category.FORMAT, spain);
+29:    printCurrency(spain, money);  // 1,23 €, español
+30: }
+
+For the exam, you do not need to memorize the various display and formatting options for each category. You just need to know that you can set parts of the locale independently. You should also know that calling Locale.setDefault(us) after the previous code snippet will change both locale categories to en_US.
+
+
+LOADING PROPERTIES WITH RESOURCE BUNDLES
+-----------------------------------------
+
+A resource bundle contains the locale‐specific objects to be used by a program. It is like a map with keys and values. The resource bundle is commonly stored in a properties file. A properties file is a text file in a specific format with key/value pairs.
+
+A properties file is a text file that contains a list of key/value pairs. It is conceptually similar to a Map<String,String>, with each line representing a different key/value. The key and value are separated by an equal sign (=) or colon (:). 
+
+If we don't have a country‐specific resource bundle, Java will use a language‐specific one. If we don't have a country‐specific resource bundle, Java will use a language‐specific one.
+Zoo_en.properties
+hello=Hello
+open=The zoo is open
+ 
+Zoo_fr.properties
+hello=Bonjour
+open=Le zoo est ouvert
+
+Following code reads value from ResourceBundle
+10: public static void printWelcomeMessage(Locale locale) {
+11:    var rb = ResourceBundle.getBundle("Zoo", locale);
+12:    System.out.println(rb.getString("hello") 
+13:       + ", " + rb.getString("open"));
+14: }
+
+Following code prints all key/value pair from properties files
+var us = new Locale("en", "US");
+ResourceBundle rb = ResourceBundle.getBundle("Zoo", us);
+rb.keySet().stream().map(k -> k + ": " + rb.getString(k)).forEach(System.out::println);
+
+There are two methods for obtaining a resource bundle that you should be familiar with for the exam.
+
+ResourceBundle.getBundle("name");
+ResourceBundle.getBundle("name", locale);
+
+Java handles the logic of picking the best available resource bundle for a given key. It tries to find the most specific value.
+
+Picking a resource bundle for French/France with default locale English/US
+Step	Looks for file							Reason
+-----------------------------------------------------------------------------------------------------------------------------------------------
+1	Zoo_fr_FR.properties						The requested locale
+2	Zoo_fr.properties						The language we requested with no country
+3	Zoo_en_US.properties						The default locale
+4	Zoo_en.properties						The default locale's language with no country
+5	Zoo.properties							No locale at all—the default bundle
+6	If still not found, throw MissingResourceException.		No locale or default bundle available
+
+As another way of remembering the order of above Table, learn these steps:
+1. Look for the resource bundle for the requested locale, followed by the one for the default locale.
+2. For each locale, check language/country, followed by just the language.
+3. Use the default resource bundle if no matching locale can be found.
+
+Java isn't required to get all of the keys from the same resource bundle. It can get them from any parent of the matching resource bundle. A parent resource bundle in the hierarchy just removes components of the name until it gets to the top.
+
+Selecting resource bundle properties
+Matching resource bundle	Properties files keys can come from
+------------------------------------------------------------------
+Zoo_fr_FR			Zoo_fr_FR.properties 
+				Zoo_fr.properties 
+				Zoo.properties
+				
+Assume the requested locale is fr_FR and the default is en_US. The JVM will provide data from an en_US only if there is no matching fr_FR or fr resource bundles. If it finds a fr_FR or fr resource bundle, then only those bundles, along with the default bundle, will be used.
+
+What if a property is not found in any resource bundle? Then, MissingResourceException is thrown at runtime.
+
+In real programs, it is common to substitute variables in the middle of a resource bundle String. The convention is to use a number inside braces such as {0}, {1}, etc. The number indicates the order in which the parameters will be passed. Although resource bundles don't support this directly, the MessageFormat class does.
+
+For example, suppose that we had this property defined:
+
+helloByName=Hello, {0} and {1}
+In Java, we can read in the value normally. After that, we can run it through the MessageFormat class to substitute the parameters. The second parameter to format() is a vararg, allowing you to specify any number of input values.
+String format = rb.getString("helloByName");
+System.out.print(MessageFormat.format(format, "Tammy", "Henry"));
+that would then print the following:
+Hello, Tammy and Henry
+
+When working with the ResourceBundle class, you may also come across the Properties class. It functions like the HashMap class that you learned about in Chapter 3, “Generics and Collections,” except that it uses String values for the keys and values. 
+
+import java.util.Properties;
+public class ZooOptions {
+   public static void main(String[] args) {
+      var props = new Properties();
+      props.setProperty("name", "Our zoo");
+      props.setProperty("open", "10am");
+   }
+}
+
+The Properties class is commonly used in handling values that may not exist.
+System.out.println(props.getProperty("camel"));         // null
+System.out.println(props.getProperty("camel", "Bob"));  // Bob
+
+The Properties class also includes a get() method, but only getProperty() allows for a default value. 
+props.get("open");                               // 10am
+props.get("open", "The zoo will be open soon");  // DOES NOT COMPILE
+
+You should use the getProperty() and setProperty() methods when working with a Properties object, rather than the get()/ put() methods. Besides supporting default values, it also ensures you don't add data to the Properties object that cannot be read.
+
+var props = new Properties();
+props.put("tigerAge", "4");
+props.put("lionAge", 5);
+System.out.println(props.getProperty("tigerAge"));  // 4
+System.out.println(props.getProperty("lionAge"));   // null
