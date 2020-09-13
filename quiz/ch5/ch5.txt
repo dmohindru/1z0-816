@@ -1,0 +1,67 @@
+1. D --INCORRECT--
+NOT VERY SURE Silly Mistake
+
+2. A, D --INCORRECT--
+Silly Mistake
+
+3. G --CORRECT--
+
+4. A --INCORRECT--
+Silly Mistake
+5. E --CORRECT--
+
+6. C --CORRECT--
+
+7. F --INCORRECT--
+#,000.0# <- This should be the answer-- Silly mistake
+
+8. A, D --CORRECT--
+
+9. B, E --CORRECT--
+
+10. A, B --INCORRECT--
+Silly Mistake
+
+11. B --INCORRECT--
+
+12. A, B --CORRECT--
+REVIEW THIS QUESTION
+
+13. C, D --CORRECT--
+
+14. F --INCORRECT--
+I believe this is correct answer by book says D
+
+15. F  --CORRECT--
+
+
+16. B, C --CORRECT--
+
+17. D, E, F --INCORRECT--
+
+18. C --CORRECT--
+GOOD QUESTION TO STUDY
+
+19. D --CORRECT--
+
+20. B --CORRECT--
+
+21. C --CORRECT--
+
+22. B --INCORRECT--
+
+23. A, E --CORRECT--
+
+24. E --CORRECT--
+
+25. C --INCORRECT--
+Silly mistake
+
+26. A, E --CORRECT--
+
+27. E --CORRECT--
+
+17/27 (63%)
+without silly mistakes 24/27 (89%)
+
+
