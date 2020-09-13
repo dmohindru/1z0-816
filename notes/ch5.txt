@@ -177,11 +177,15 @@ Internal invariants		Assert that a value is within a certain constraint, such as
 Class invariants		Assert the validity of an object's state. Class invariants are typically private methods within the class that return a 					boolean.
 Control flow invariants	Assert that a line of code you assume is unreachable is never reached.
 Pre‐conditions			Assert that certain conditions are met before a method is invoked.
-Post‐conditions	Assert that certain conditions are met after a method executes successfully.
+Post‐conditions		Assert that certain conditions are met after a method executes successfully.
 
 One of the most important rules you should remember from this section is: assertions should never alter outcomes. This is especially true because assertions can, should, and probably will be turned off in a production environment.
 int x = 10;
 assert ++x> 10; // Not a good design!
+
+An argument passed from elsewhere in the program is an appropriate use of an assertion.
+
+watch out for question that have assert statements in a program and a java command to that program with -ea command line option. In that case assert statement are not executed and you answer should be based on no assert statements.
 
 WORKING WITH DATES AND TIMES
 ----------------------------
@@ -382,6 +386,25 @@ For formatting dates and times	DateTimeFormatter.ofLocalizedDateTime(dateStyle, 
 					DateTimeFormatter.ofLocalizedDateTime(dateTimeStyle)
 					
 Each method in the table takes a FormatStyle parameter, with possible values SHORT, MEDIUM, LONG, and FULL. For the exam, you are not required to know the format of each of these styles. What if you need a formatter for a specific locale? Easy enough—just append withLocale(locale) to the method call.
+public static void print(DateTimeFormatter dtf, LocalDateTime dateTime, Locale locale) {
+   System.out.println(dtf.format(dateTime) + ", " + dtf.withLocale(locale).format(dateTime));
+}
+
+6: Output shown with various option for FormatSytle.
+7: LocalDateTime ldt = LocalDateTime.of(2020, 5, 10, 11, 22, 33);
+8: var f = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+9: System.out.println(ldt.format(f));
+
+Format.SHORT:	11:22 AM
+Format.MEDIUM: 11:22:33 AM
+Format.LONG:// throws exception as above code does not contain zone info
+Format.FULL: //throws exception as above code does not contain zone info
+
+But in above code if line 7 is replaced with ZonedDateTime with a time zone of "Australia/Perth" following will be output for various option of FormatSytle
+Format.SHORT:	11:22 AM
+Format.MEDIUM: 11:22:33 AM
+Format.LONG: 11:22:33 AM AWST
+Format.FULL: 11:22:33 AM Australian Western Standard Time
 
 When you call Locale.setDefault() with a locale, several display and formatting options are internally selected. If you require finer‐grained control of the default locale, Java actually subdivides the underlying formatting options into distinct categories, with the Locale.Category enum.
 
@@ -476,6 +499,8 @@ Zoo_fr_FR			Zoo_fr_FR.properties
 				Zoo.properties
 				
 Assume the requested locale is fr_FR and the default is en_US. The JVM will provide data from an en_US only if there is no matching fr_FR or fr resource bundles. If it finds a fr_FR or fr resource bundle, then only those bundles, along with the default bundle, will be used.
+
+Once a bundle is chosen, only resources in that hierarchy are allowed. It cannot use the default locale anymore, but it can use the default resource bundle specified by Dolphins.properties.
 
 What if a property is not found in any resource bundle? Then, MissingResourceException is thrown at runtime.
 
