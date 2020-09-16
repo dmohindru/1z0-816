@@ -1,0 +1,70 @@
+INTRODUCING THREADS
+-------------------
+
+A thread is the smallest unit of execution that can be scheduled by the operating system. A process is a group of associated threads that execute in the same, shared environment. It follows, then, that a single-threaded process is one that contains exactly one thread, whereas a multithreaded process is one that contains one or more threads.
+
+By shared environment, we mean that the threads in the same process share the same memory space and can communicate directly with one another. 
+
+A task is a single unit of work performed by a thread. Throughout this chapter, a task will commonly be implemented as a lambda expression. A thread can complete multiple independent tasks but only one task at a time.
+
+By shared memory in Figure 7.1, we are generally referring to static variables, as well as instance and local variables passed to a thread. 
+
+A system thread is created by the JVM and runs in the background of the application. For example, the garbage collection is managed by a system thread that is created by the JVM and runs in the background, helping to free memory that is no longer in use.
+
+When a system-defined thread encounters a problem and cannot recover, such as running out of memory, it generates a Java Error, as opposed to an Exception.
+
+Note: As discussed in Chapter 5, “Exceptions, Assertions, and Localization,” even though it is possible to catch an Error, it is considered a poor practice to do so, since it is rare that an application can recover from a system-level failure.
+
+Alternatively, a user-defined thread is one created by the application developer to accomplish a specific task. With the exception of parallel streams presented briefly in Chapter 4.
+
+The property of executing multiple threads and processes at the same time is referred to as concurrency. 
+
+When a thread's allotted time is complete but the thread has not finished processing, a context switch occurs. A context switch is the process of storing a thread's current state and later restoring the state of the thread to continue execution.
+
+Finally, a thread can interrupt or supersede another thread if it has a higher thread priority than the other thread. A thread priority is a numeric value associated with a thread that is taken into consideration by the thread scheduler when determining which threads should currently be executing.
+
+As we mentioned in Chapter 4, java.lang.Runnable is a functional interface that takes no arguments and returns no data. The following is the definition of the Runnable interface:
+@FunctionalInterface public interface Runnable {
+   void run();
+}
+
+The following lambda expressions each implement the Runnable interface:
+Runnable sloth = () -> System.out.println("Hello World");
+Runnable snake = () -> {int i=10; i++;};
+Runnable beaver = () -> {return;};
+Runnable coyote = () -> {};
+
+he following lambdas, while valid for other functional interfaces, are not compatible with Runnable because they return a value.
+
+Runnable capybara = () -> "";                 // DOES NOT COMPILE
+Runnable Hippopotamus = () -> 5;              // DOES NOT COMPILE
+Runnable emu = () -> {return new Object();};  // DOES NOT COMPILE
+
+Executing a task with Thread is a two-step process. First, you define the Thread with the corresponding task to be done. Then, you start the task by using the Thread.start() method.
+
+Defining the task that a Thread instance will execute can be done two ways in Java:
+1. Provide a Runnable object or lambda expression to the Thread constructor.
+2. Create a class that extends Thread and overrides the run() method.
+
+The following are examples of these techniques:
+public class PrintData implements Runnable {
+   @Override public void run() { // Overrides method in Runnable
+      for(int i = 0; i < 3; i++)
+         System.out.println("Printing record: "+i);
+   }
+   public static void main(String[] args) {
+      (new Thread(new PrintData())).start();
+   }
+}
+ public class ReadInventoryThread extends Thread {
+   @Override public void run() { // Overrides method in Thread
+      System.out.println("Printing zoo inventory");
+   }
+   public static void main(String[] args) {
+      (new ReadInventoryThread()).start();
+   }
+}
+
+Anytime you create a Thread instance, make sure that you remember to start the task with the Thread.start() method. Each thread created on these lines is executed as an asynchronous task. By asynchronous, we mean that the thread executing the main() method does not wait for the results of each newly created thread before continuing. The opposite of this behavior is a synchronous task in which the program waits (or blocks) on line 4 for the thread to finish executing before moving on to the next line.
+
+While the order of thread execution once the threads have been started is indeterminate, the order within a single thread is still linear. 
