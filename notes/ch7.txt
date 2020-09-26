@@ -34,7 +34,7 @@ Runnable snake = () -> {int i=10; i++;};
 Runnable beaver = () -> {return;};
 Runnable coyote = () -> {};
 
-he following lambdas, while valid for other functional interfaces, are not compatible with Runnable because they return a value.
+The following lambdas, while valid for other functional interfaces, are not compatible with Runnable because they return a value.
 
 Runnable capybara = () -> "";                 // DOES NOT COMPILE
 Runnable Hippopotamus = () -> 5;              // DOES NOT COMPILE
@@ -79,6 +79,9 @@ The Thread.sleep() method requests the current thread of execution rest for a sp
 
 Another issue to be concerned about is the shared counter variable. What if one thread is reading the counter variable while another thread is writing it? The thread reading the shared variable may end up with an invalid or incorrect value.
 
+We can create a new thread with following statement. But this statement will not execute asynchronously but synchronously like normal statement. In short it will not create a new thread. But will execute normally.
+new Thread(new PrintData())).run();
+
 CREATING THREADS WITH CONCURRENCY API
 -------------------------------------
 
@@ -117,7 +120,7 @@ Callable<T>> tasks)
 throws InterruptedException			Executes the given tasks and waits for all tasks to complete. Returns a List of Future instances, in the same 							order they were in the original collection
 <T> T invokeAny(Collection<? extends
 Callable<T>> tasks) throws 
-InterruptedException, ExecutionException	Executes the given tasks and waits for at least one to complete. Returns a Future instance for a complete task 							and cancels any unfinished tasks
+InterruptedException, ExecutionException	Executes the given tasks and waits for at least one to complete. Returns a the result of a complete task 							and cancels any unfinished tasks
 
 For the exam, you need to be familiar with both execute() and submit(), but in your own code we recommend submit() over execute() whenever possible.
 
@@ -127,8 +130,8 @@ Method name					Description
 boolean isDone()				Returns true if the task was completed, threw an exception, or was cancelled
 boolean isCancelled()				Returns true if the task was cancelled before it completed normally
 boolean cancel(boolean mayInterruptIfRunning)	Attempts to cancel execution of the task and returns true if it was successfully cancelled or false if it 							could not be cancelled or is complete
-V get()					Retrieves the result of a task, waiting endlessly if it is not yet available
-V get(long timeout, TimeUnit unit)		Retrieves the result of a task, waiting the specified amount of time. If the result is not ready by the time 							the timeout is reached, a checked TimeoutException will be thrown.
+V get()					Retrieves the result of a task, waiting endlessly if it is not yet available. Throws CancellationException, 						ExecutionException, InterruptedException
+V get(long timeout, TimeUnit unit)		Retrieves the result of a task, waiting the specified amount of time. If the result is not ready by the time 							the timeout is reached, a checked TimeoutException will be thrown. Throws CancellationException, 							ExecutionException, InterruptedException, TimeoutException
 
 
 TimeUnit values
@@ -197,7 +200,7 @@ On the other hand, the invokeAny() method executes a collection of tasks and ret
 25: System.out.println("end");
 As before, the JVM waits on line 23 for a completed task before moving on to the next line. The other tasks that did not complete are cancelled.
 
-For the exam, remember that the invokeAll() method will wait indefinitely until all tasks are complete, while the invokeAny() method will wait indefinitely until at least one task completes. The ExecutorService interface also includes overloaded versions of invokeAll() and invokeAny() that take a timeout value and TimeUnit parameter.
+For the exam, remember that the invokeAll() method will wait indefinitely until all tasks are complete, while the invokeAny() method will wait indefinitely until at least one task completes. The ExecutorService interface also includes overloaded versions of invokeAll() and invokeAny() that take a timeout value and TimeUnit parameter.	
 
 Oftentimes in Java, we need to schedule a task to happen at some future time. We might even need to schedule the task to happen repeatedly, at some set interval. The ScheduledExecutorService, which is a subinterface of ExecutorService, can be used for just such a task.
 
@@ -365,7 +368,7 @@ try {
    lock.unlock();
 }
 
-The ReentrantLock class is a simple monitor that implements the Lock interface and supports mutual exclusion. In other words, at most one thread is allowed to hold a lock at any given time.
+The ReentrantLock class is a simple monitor that implements the Lock interface and supports mutual exclusion. In other words, at most one thread is allowed to hold a lock at any given time. By default fairness to each thread is not set.
 
 Note:  The ReentrantLock class contains a constructor that can be used to send a boolean “fairness” parameter. If set to true, then the lock will usually be granted to each thread in the order it was requested. 
 
@@ -659,3 +662,8 @@ public static List<Integer> addValues(IntStream source) {
 }
 
 output: [2, 4, 6, 8, 10]
+
+On parallel stream output of findAny() function is non deterministic.
+
+Note: calling parallel method on a already parallel stream is allowed.
+e.g List.of(1, 2, 3, 4).parallelStream().parallel() is allowed

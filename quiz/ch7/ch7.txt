@@ -1,0 +1,54 @@
+1. D, F --correct--
+
+2. D --incorrect--
+
+3. A, C, D, F --correct--
+
+4. B, C --correct--
+
+5. D --incorrect--
+
+6. C, E --correct--
+
+7. D --correct--
+
+8. F --incorrect--
+
+9. C --correct--
+
+10. F --incorrect--
+
+11. A, B --incorrect--
+
+12. F --incorrect--
+
+13. B --incorrect--
+
+14. C, E --correct--
+
+15. E --incorrect--
+
+16. D, E --incorrect--
+
+17. B --incorrect--
+
+18. A, C, D, E, F, G --incorrect--
+
+19. A --incorrect--
+
+20. A --incorrect--
+
+21. A, B --incorrect--
+
+22. B --correct--
+
+23. F --correct--
+
+24. A, F --correct--
+
+25. A, C, D --incorrect--
+
+26. B --incorrect--
+
+10/26 = 38.46%
+
