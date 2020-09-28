@@ -1,0 +1,46 @@
+1. F --CORRECT--
+
+2. C, D, F, G --INCORRECT--
+
+3. E --INCORRECT--
+
+4. A, B, D --INCORRECT--
+
+5. B, E --CORRECT--
+
+6. C, D, E --CORRECT--
+
+7. G --CORRECT--
+
+8. A, F --CORRECT--
+
+9. A, E --INCORRECT--
+
+10. E, F --CORRECT--
+
+11. C --CORRECT--
+
+12. A, B --INCORRECT--
+
+13. B, E --CORRECT--
+
+14. A, C, E --CORRECT--
+
+15. E --CORRECT--
+
+16. E --INCORRECT--
+
+17. C  --CORRECT--
+PEOE
+
+18. B, C, D --CORRECT--
+
+19. D, G --INCORRECT--
+
+20. C --CORRECT--
+
+21. A, C --CORRECT--
+
+22. G --CORRECT--
+
+(15/22) = 68.18%
