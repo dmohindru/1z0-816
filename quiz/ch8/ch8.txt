@@ -35,7 +35,7 @@ PEOE
 
 18. B, C, D --CORRECT--
 
-19. D, G --INCORRECT--
+19. D, G --INCORRECT-- <---start here----
 
 20. C --CORRECT--
 
