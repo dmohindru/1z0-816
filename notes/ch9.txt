@@ -6,4 +6,218 @@ In this chapter, we focus on the java.nio version 2 API, or NIO.2 for short, to 
 INTRODUCING NIO.2
 -----------------
 
+The goal of the API is to provide a more intuitive, more feature-rich API for working with files and directories. By legacy, we mean that the preferred approach for working with files and directories with newer software applications is to use NIO.2, rather than java.io.File. 
+
+The cornerstone of NIO.2 is the java.nio.file.Path interface. A Path instance represents a hierarchical path on the storage system to a file or directory. You can think of a Path as the NIO.2 replacement for the java.io.File class, although how you use it is a bit different.
+
+Before we get into that, let's talk about what's similar between these two implementations. Both java.io.File and Path objects may refer to an absolute path or relative path within the file system. 
+
+Unlike the java.io.File class, the Path interface contains support for symbolic links. A symbolic link is a special file within a file system that serves as a reference or pointer to another file or directory.
+
+Since Path is an interface, we can't create an instance directly. After all, interfaces don't have constructors! Java provides a number of classes and methods that you can use to obtain Path objects, which we will review in this section.
+
+The simplest and most straightforward way to obtain a Path object is to use the static factory method defined within the Path interface.
+
+// Path factory method
+public static Path of(String first, String… more)
+It's easy to create Path instances from String values, as shown here:
+
+Path path1 = Path.of("pandas/cuddly.png");	// Creates relative path to current working directory 
+Path path2 = Path.of("c:\\zooinfo\\November\\employees.txt"); // Creates absolute path on windows based system
+Path path3 = Path.of("/home/zoodirectory");	// Creates absolute path on unix based system
+
+The Path.of() method also includes a varargs to pass additional path elements.  Below code is similar to usage of above code
+Path path1 = Path.of("pandas", "cuddly.png");
+Path path2 = Path.of("c:", "zooinfo", "November", "employees.txt");
+Path path3 = Path.of("/", "home", "zoodirectory");
+
+Determining whether a path is relative or absolute is actually file-system dependent. To match the exam, we adopt the following conventions:
+1. If a path starts with a forward slash (/), it is absolute, with / as the root directory. Examples: /bird/parrot.png and /bird/../data/./info
+2. If a path starts with a drive letter (c:), it is absolute, with the drive letter as the root directory. Examples: c:/bird/parrot.png and d:/bird/../data/./info
+3. Otherwise, it is a relative path. Examples: bird/parrot.png and bird/../data/./info
+
+Another way to obtain a Path instance is from the java.nio.file.Paths factory class. Note the s at the end of the Paths class to distinguish it from the Path interface.
+// Paths factory method
+public static Path get​(String first, String… more)
+
+Rewriting our previous examples is easy.
+Path path1 = Paths.get("pandas/cuddly.png");
+Path path2 = Paths.get("c:\\zooinfo\\November\\employees.txt");
+Path path3 = Paths.get("/", "home", "zoodirectory");
+
+Another way to construct a Path using the Paths class is with a URI value. A uniform resource identifier (URI) is a string of characters that identify a resource. It begins with a schema that indicates the resource type, followed by a path value. Examples of schema values include file:// for local file systems, and http://, https://, and ftp:// for remote file systems.
+
+The java.net.URI class is used to create URI values.
+
+// URI Constructor
+public URI(String str) throws URISyntaxException
+
+Java includes multiple methods to convert between Path and URI objects.
+
+// URI to Path, using Path factory method
+public static Path of(URI uri)
+ 
+ // URI to Path, using Paths factory method
+public static Path get(URI uri)
+ 
+// Path to URI, using Path instance method
+public URI toURI()
+The following examples all reference the same file:
+
+URI a = new URI("file://icecream.txt");
+Path b = Path.of(a);
+Path c = Paths.get(a);
+URI d = b.toUri();
+
+The FileSystems class creates instances of the abstract FileSystem class.
+// FileSystems factory method
+public static FileSystem getDefault()
+The FileSystem class includes methods for working with the file system directly.
+
+// FileSystem instance method
+public Path getPath​(String first, String… more)
+
+Let's rewrite our three earlier examples one more time to show you how to obtain a Path instance “the long way.”
+
+Path path1 = FileSystems.getDefault().getPath("pandas/cuddly.png");
+Path path2 = FileSystems.getDefault()
+   .getPath("c:\\zooinfo\\November\\employees.txt");
+Path path3 = FileSystems.getDefault().getPath("/home/zoodirectory");
+
+Real world scenario not important for exam
+While most of the time we want access to a Path object that is within the local file system, the FileSystems class does give us the freedom to connect to a remote file system, as follows:
+// FileSystems factory method
+public static FileSystem getFileSystem​(URI uri)
+The following shows how such a method can be used:
+FileSystem fileSystem = FileSystems.getFileSystem(new URI("http://www.selikoff.net"));
+Path path = fileSystem.getPath("duck.txt");
+
+Last but not least, we can obtain Path instances using the legacy java.io.File class. In fact, we can also obtain a java.io.File object from a Path instance.
+
+// Path to File, using Path instance method
+public default File toFile()
+ 
+// File to Path, using java.io.File instance method
+public Path toPath()
+
+See Figure 9.2 for NIO.2 class and interface relationships
+
+Absolute and relative paths can contain path symbols. A path symbol is a reserved series of characters that have special meaning within some file systems. For the exam, there are two path symbols you need to know
+
+File system symbols
+Symbol		Description
+-------------------------------------------------------------
+.		A reference to the current directory
+..		A reference to the parent of the current directory
+
+Refer Table 9.2 for Common NIO.2 method arguments
+
+Many of the methods presented in this chapter declare IOException. Common causes of a method throwing this exception include the following:
+1. Loss of communication to underlying file system.
+2. File or directory exists but cannot be accessed or modified.
+3. File exists but cannot be overwritten.
+4. File or directory is required but does not exist.
+
+INTERACTING WITH PATHS
+----------------------
+
+Just like String values, Path instances are immutable. In the following example, the Path operation on the second line is lost since p is immutable:
+
+Path p = Path.of("whale");
+p.resolve("krill");
+System.out.println(p);  // whale
+
+The JVM communicates with the file system to determine the path components or the parent directory of a file, without requiring the file to actually exist. As rule of thumb, if the method declares an IOException, then it usually requires the paths it operates on to exist.
+
+The Path interface contains three methods to retrieve basic information about the path representation.
+public String toString()
+public int getNameCount()
+public Path getName(int index)
+
+The Path interface includes a method to select portions of a path.
+public Path subpath(int beginIndex, int endIndex)
+The references are inclusive of the beginIndex, and exclusive of the endIndex.
+
+Like getNameCount() and getName(), subpath() is 0-indexed and does not include the root. Also like getName(), subpath() throws an exception if invalid indices are provided.
+var q = p.subpath(0, 4); // IllegalArgumentException
+var x = p.subpath(1, 1); // IllegalArgumentException
+
+The Path interface contains numerous methods for retrieving particular elements of a Path, returned as Path objects themselves.
+public Path getFileName()
+public Path getParent() 
+public Path getRoot()
+The getFileName() returns the Path element of the current file or directory, while getParent() returns the full path of the containing directory. The getParent() returns null if operated on the root path or at the top of a relative path. The getRoot() method returns the root element of the file within the file system, or null if the path is a relative path.
+
+The Path interface contains two methods for assisting with relative and absolute paths:
+public boolean isAbsolute()
+public Path toAbsolutePath()
+
+The Path interface contains two methods for assisting with relative and absolute paths:
+public boolean isAbsolute()
+public Path toAbsolutePath()
+
+The first method, isAbsolute(), returns true if the path the object references is absolute and false if the path the object references is relative. The second method, toAbsolutePath(), converts a relative Path object to an absolute Path object by joining it to the current working directory. If the Path object is already absolute, then the method just returns the Path object.
+
+Suppose you want to concatenate paths in a similar manner as we concatenate strings. The Path interface provides two resolve() methods for doing just that.
+
+public Path resolve(Path other)
+public Path resolve(String other)
+
+The first method takes a Path parameter, while the overloaded version is a shorthand form of the first that takes a String (and constructs the Path for you). The object on which the resolve() method is invoked becomes the basis of the new Path object, with the input argument being appended onto the Path.
+
+For the exam, you should be cognizant of mixing absolute and relative paths with the resolve() method. If an absolute path is provided as input to the method, then that is the value that is returned. Simply put, you cannot combine two absolute paths using resolve().
+
+The Path interface includes a method for constructing the relative path from one Path to another, often using path symbols.
+
+public Path relativize()
+
+The idea is this: if you are pointed at a path in the file system, what steps would you need to take to reach the other path? For example, to get to fish.txt from friendly/birds.txt, you need to go up two levels (the file itself counts as one level) and then select fish.txt.
+
+If both path values are relative, then the relativize() method computes the paths as if they are in the same current working directory. Alternatively, if both path values are absolute, then the method computes the relative path from one absolute location to another, regardless of the current working directory. 
+
+The relativize() method requires that both paths are absolute or both relative and throws an exception if the types are mixed. On Windows-based systems, it also requires that if absolute paths are used, then both paths must have the same root directory or drive letter.
+
+Java provides a method to eliminate unnecessary redundancies in a path.
+
+public Path normalize()
+Remember, the path symbol .. refers to the parent directory, while the path symbol . refers to the current directory. We can apply normalize() to some of our previous paths.
+
+var p1 = Path.of("./armadillo/../shells.txt");
+System.out.println(p1.normalize()); // shells.txt
+ 
+var p2 = Path.of("/cats/../panther/food");
+System.out.println(p2.normalize()); // /panther/food
+ 
+var p3 = Path.of("../../fish.txt");
+System.out.println(p3.normalize()); // ../../fish.txt 
+
+While working with theoretical paths is useful, sometimes you want to verify the path actually exists within the file system.
+
+public Path toRealPath(LinkOption… options) throws IOException
+
+This method is similar to normalize(), in that it eliminates any redundant path symbols. It is also similar to toAbsolutePath(), in that it will join the path with the current working directory if the path is relative.
+
+Unlike those two methods, though, toRealPath() will throw an exception if the path does not exist. In addition, it will follow symbolic links, with an optional varargs parameter to ignore them.
+
+We can also use the toRealPath() method to gain access to the current working directory as a Path object.
+System.out.println(Paths.get(".").toRealPath());
+
+Summary of Path methods
+Path methods
+--------------------------------------------------
+Path of(String, String…)	Path getParent()
+URI toURI()			Path getRoot()
+File toFile()			boolean isAbsolute()
+String toString()		Path toAbsolutePath()
+int getNameCount()		Path relativize()
+Path getName(int)		Path resolve(Path)
+Path subpath(int, int)		Path normalize()
+Path getFileName()		Path toRealPath(LinkOption…)
+
+In addition, only toRealPath() declares an IOException.
+
+
+
+OPERATING ON FILES AND DIRECTORIES
+----------------------------------
 
