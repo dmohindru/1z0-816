@@ -221,3 +221,126 @@ In addition, only toRealPath() declares an IOException.
 OPERATING ON FILES AND DIRECTORIES
 ----------------------------------
 
+The Files helper class is capable of interacting with real files and directories within the system. Because of this, most of the methods in this part of the chapter take optional parameters and throw an IOException if the path does not exist.
+
+The first Files method we present is the simplest. It just checks whether the file exists.
+
+public static boolean exists(Path path, LinkOption… options)
+
+Since a path may include path symbols and symbolic links within a file system, it can be difficult to know if two Path instances refer to the same file. Luckily, there's a method for that in the Files class:
+
+public static boolean isSameFile​(Path path, Path path2) throws IOException
+
+While most usages of isSameFile() will trigger an exception if the paths do not exist, there is a special case in which it does not. If the two path objects are equal, in terms of equals(), then the method will just return true without checking whether the file exists.
+
+Note: This isSameFile() method does not compare the contents of the files. Two files may have identical names, content, and attributes, but if they are in different locations, then this method will return false.
+
+To create a directory, we use these Files methods:
+
+public static Path createDirectory​(Path dir,
+   FileAttribute<?>… attrs) throws IOException
+ 
+public static Path createDirectories​(Path dir,
+   FileAttribute<?>… attrs) throws IOException
+The createDirectory() will create a directory and throw an exception if it already exists or the paths leading up to the directory do not exist.
+
+The createDirectories() works just like the java.io.File method mkdirs(), in that it creates the target directory along with any nonexistent parent directories leading up to the path. If all of the directories already exist, createDirectories() will simply complete without doing anything. This is useful in situations where you want to ensure a directory exists and create it if it does not.
+
+The NIO.2 Files class provides a method for copying files and directories within the file system.
+
+public static Path copy​(Path source, Path target,
+   CopyOption… options) throws IOException 
+The method copies a file or directory from one location to another using Path objects. The following shows an example of copying a file and a directory:
+
+Files.copy(Paths.get("/panda/bamboo.txt"),
+   Paths.get("/panda-save/bamboo.txt"));
+ 
+Files.copy(Paths.get("/turtle"), Paths.get("/turtleCopy"));
+When directories are copied, the copy is shallow. 
+
+By default, if the target already exists, the copy() method will throw an exception. You can change this behavior by providing the StandardCopyOption enum value REPLACE_EXISTING to the method. For the exam, you need to know that without the REPLACE_EXISTING option, this method will throw an exception if the file already exists.
+
+The Files class includes two copy() methods that operate with I/O streams.
+
+public static long copy​(InputStream in, Path target,
+   CopyOption… options) throws IOException
+ 
+public static long copy​(Path source, OutputStream out)
+   throws IOException
+The first method reads the contents of a stream and writes the output to a file. The second method reads the contents of a file and writes the output to a stream. They are quite convenient if you need to quickly read/write data from/to disk.
+
+For example, let's say we have a file, food.txt, and a directory, /enclosure. Both the file and directory exist. What do you think is the result of executing the following process?
+
+var file = Paths.get("food.txt");
+var directory = Paths.get("/enclosure");
+Files.copy(file, directory);
+If you said it would create a new file at /enclosure/food.txt, then you're way off. It actually throws an exception. The command tries to create a new file, named /enclosure. Since the path /enclosure already exists, an exception is thrown at runtime.
+
+On the other hand, if the directory did not exist, then it would create a new file with the contents of food.txt, but it would be called /enclosure. Remember, we said files may not need to have extensions, and in this example, it matters.
+
+The correct way to copy the file into the directory would be to do the following:
+var file = Paths.get("food.txt");
+var directory = Paths.get("/enclosure/food.txt");
+Files.copy(file, directory);
+
+The Files class provides a useful method for moving or renaming files and directories.
+
+public static Path move​(Path source, Path target,
+   CopyOption… options) throws IOException
+The following is some sample code that uses the move() method:
+
+Files.move(Path.of("c:\\zoo"), Path.of("c:\\zoo-new"));
+ 
+Files.move(Path.of("c:\\user\\addresses.txt"),
+   Path.of("c:\\zoo-new\\addresses2.txt"));
+   
+Like copy(), move() requires REPLACE_EXISTING to overwrite the target if it exists, else it will throw an exception. Also like copy(), move() will not put a file in a directory if the source is a file and the target is a directory. Instead, it will create a new file with the name of the directory.
+
+Another enum value that you need to know for the exam when working with the move() method is the StandardCopyOption value ATOMIC_MOVE.
+
+Files.move(Path.of("mouse.txt"), Path.of("gerbil.txt"),
+   StandardCopyOption.ATOMIC_MOVE);
+   
+Another enum value that you need to know for the exam when working with the move() method is the StandardCopyOption value ATOMIC_MOVE. Put another way, any process monitoring the file system never sees an incomplete or partially written file. If the file system does not support this feature, an AtomicMoveNotSupportedException will be thrown.
+
+The Files class includes two methods that delete a file or empty directory within the file system.
+
+public static void delete​(Path path) throws IOException
+ 
+public static boolean deleteIfExists​(Path path) throws IOException
+To delete a directory, it must be empty. Both of these methods throw an exception if operated on a nonempty directory. In addition, if the path is a symbolic link, then the symbolic link will be deleted, not the path that the symbolic link points to. The delete() method throws an exception if the path does not exist, while the deleteIfExists() method returns true if the delete was successful, and false otherwise.
+
+
+NIO.2 includes two convenient methods for working with I/O streams.
+
+public static BufferedReader newBufferedReader​(Path path) throws IOException
+public static BufferedWriter newBufferedWriter​(Path path, OpenOption… options) throws IOException
+
+Note: There are overloaded versions of these methods that take a Charset. You may remember that we briefly discussed character encoding and Charset in Chapter 8. For this chapter, you just need to know that characters can be encoded in bytes in a variety of ways.
+
+The Files class includes a convenient method for turning the lines of a file into a List.
+
+public static List<String> readAllLines​(Path path) throws IOException
+The following sample code reads the lines of the file and outputs them to the user:
+
+var path = Path.of("/animals/gopher.txt");
+final List<String> lines = Files.readAllLines(path);
+lines.forEach(System.out::println);
+
+Be aware that the entire file is read when readAllLines() is called, with the resulting List<String> storing all of the contents of the file in memory at once. If the file is significantly large, then you may trigger an OutOfMemoryError trying to load all of it into memory.
+
+Table below shows the static methods in the Files class that you should be familiar with for the exam.
+boolean exists(Path, LinkOption…)			Path move(Path, Path, CopyOption…)
+boolean isSameFile(Path, Path)			void delete(Path)
+Path createDirectory(Path, FileAttribute<?>…)		boolean deleteIfExists(Path)
+Path createDirectories(Path, FileAttribute<?>…)	BufferedReader newBufferedReader(Path)
+Path copy(Path, Path, CopyOption…)			BufferedWriter newBufferedWriter(Path, OpenOption…)
+long copy(InputStream, Path, CopyOption…)		List<String> readAllLines(Path)
+long copy(Path, OutputStream)	
+
+
+MANAGING FILE ATTRIBUTES
+------------------------
+
+
+
