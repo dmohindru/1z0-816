@@ -1,0 +1,48 @@
+1. E --CORRECT--
+relativize takes two parameters
+2. B, C --INCORRECT--
+
+3. C --INCORRECT--
+Files does not have mkdir function
+
+4. C --CORRECT--
+
+5. A --INCORRECT--
+FOLLOW_LINK are default behaviour of functions
+
+6. B --INCORRECT--
+
+7. C --INCORRECT--
+
+8. B, D, G --CORRECT--
+
+9. D --INCORRECT--
+
+10. A, B, C, D --INCORRECT--
+
+11. D --CORRECT--
+
+12. A, B, C, E --INCORRECT--
+
+13. A --CORRECT--
+
+14. B --INCORRECT--
+
+15. D --INCORRECT--
+
+16. D, E, F --CORRECT--
+
+17. A --INCORRECT--
+
+18. E --INCORRECT-- 
+
+19. D --CORRECT--
+
+20. D --INCORRECT-- <--------
+
+21. B --CORRECT--
+
+22. A, B, E --INCORRECT--
+
+(8/22): 36.36%
+

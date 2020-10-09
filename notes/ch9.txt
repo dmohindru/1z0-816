@@ -152,10 +152,6 @@ The Path interface contains two methods for assisting with relative and absolute
 public boolean isAbsolute()
 public Path toAbsolutePath()
 
-The Path interface contains two methods for assisting with relative and absolute paths:
-public boolean isAbsolute()
-public Path toAbsolutePath()
-
 The first method, isAbsolute(), returns true if the path the object references is absolute and false if the path the object references is relative. The second method, toAbsolutePath(), converts a relative Path object to an absolute Path object by joining it to the current working directory. If the Path object is already absolute, then the method just returns the Path object.
 
 Suppose you want to concatenate paths in a similar manner as we concatenate strings. The Path interface provides two resolve() methods for doing just that.
@@ -169,7 +165,7 @@ For the exam, you should be cognizant of mixing absolute and relative paths with
 
 The Path interface includes a method for constructing the relative path from one Path to another, often using path symbols.
 
-public Path relativize()
+public Path relativize(Path other)
 
 The idea is this: if you are pointed at a path in the file system, what steps would you need to take to reach the other path? For example, to get to fish.txt from friendly/birds.txt, you need to go up two levels (the file itself counts as one level) and then select fish.txt.
 
@@ -209,7 +205,7 @@ Path of(String, String…)	Path getParent()
 URI toURI()			Path getRoot()
 File toFile()			boolean isAbsolute()
 String toString()		Path toAbsolutePath()
-int getNameCount()		Path relativize()
+int getNameCount()		Path relativize(Path other)
 Path getName(int)		Path resolve(Path)
 Path subpath(int, int)		Path normalize()
 Path getFileName()		Path toRealPath(LinkOption…)
@@ -502,6 +498,8 @@ try (var s = Files.find(path, 10,
 }
 
 Above code prints all java files in directory bigcats whose size larger than 1000 bytes
+
+Note: depth parameter in find of 0 point to root directory. In other word nothing will be searched.
 
 Earlier in the chapter, we presented Files.readAllLines() and commented that using it to read a very large file could result in an OutOfMemoryError problem. Luckily, NIO.2 solves this problem with a Stream API method.
 
