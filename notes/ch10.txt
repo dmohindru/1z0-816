@@ -1,0 +1,353 @@
+INTRODUCING RELATIONAL DATABASES AND SQL
+----------------------------------------
+here are two main ways to access a relational database from Java.
+
+1. Java Database Connectivity Language (JDBC): Accesses data as rows and columns. JDBC is the API covered in this chapter.
+2. Java Persistence API (JPA): Accesses data through Java objects using a concept called object-relational mapping (ORM). The idea is that you don't have to write as much code, and you get your data in Java objects. JPA is not on the exam, and therefore it is not covered in this chapter.
+
+In addition to relational databases, there is another type of database called a NoSQL database. This is for databases that store their data in a format other than tables, such as key/value, document stores, and graph-based databases. NoSQL is out of scope for the exam as well.
+
+SQL CRUD operations
+Operation	SQL Keyword	Description
+---------------------------------------------------------------------
+Create		INSERT		Adds a new row to the table
+Read		SELECT		Retrieves data from the table
+Update		UPDATE		Changes zero or more rows in the table
+Delete		DELETE		Removes zero or more rows from the table
+
+Unlike Java, SQL keywords are case insensitive. This means select, SELECT, and Select are all equivalent. Like Java primitive types, SQL has a number of data types. Most are self-explanatory, like INTEGER. There's also DECIMAL, which functions a lot like a double in Java. The strangest one is VARCHAR, standing for “variable character,” which is like a String in Java. 
+
+The INSERT statement is usually used to create one new row in a table; here's an example:
+INSERT INTO exhibits VALUES (3, 'Asian Elephant', 7.5);
+
+The SELECT statement reads data from the table.
+SELECT * FROM exhibits WHERE ID = 3;
+
+The WHERE clause is optional. If you omit it, the contents of the entire table are returned. The * indicates to return all of the columns in the order in which they were defined. Alternatively, you can list the columns that you want returned.
+
+SELECT name, num_acres FROM exhibits WHERE id = 3;
+
+You can also get information about the whole result without returning individual rows using special SQL functions.
+
+SELECT COUNT(*), SUM(num_acres) FROM exhibits;
+
+This query tells us how many species we have and how much space we need for them. It returns only one row since it is combining information. Even if there are no rows in the table, the query returns one row that contains zero as the answer.
+
+The UPDATE statement changes zero or more rows in the database.
+
+UPDATE exhibits SET num_acres = num_acres + .5 WHERE name = 'Asian Elephant';
+
+Again, the WHERE clause is optional. If it is omitted, all rows in the table will be updated. The UPDATE statement always specifies the table to update and the column to update.
+
+The DELETE statement deletes one or more rows in the database.
+
+DELETE FROM exhibits WHERE name = 'Asian Elephant';
+
+INTRODUCING THE INTERFACES OF JDBC
+----------------------------------
+For the exam you need to know five key interfaces of JDBC. On a very high level, we have the following:
+1. Driver: Establishes a connection to the database
+2. Connection: Sends commands to a database
+3. PreparedStatement: Executes a SQL query
+4. CallableStatement: Executes commands stored in the database
+5. ResultSet: Reads results of a query
+
+With JDBC, the concrete classes come from the JDBC driver.
+
+-- Refer Figure 10.2 that shows the five key interfaces that you need to know. --
+
+If you are experienced, remember that the exam uses DriverManager instead of DataSource.
+
+When working with SQL, you need the java.sql module and import java.sql.*.
+
+
+CONNECTING TO A DATABASE
+------------------------
+
+Unlike web URLs, a JDBC URL has a variety of formats. They have three parts in common, as shown in Figure 10.3. The first piece is always the same. It is the protocol jdbc. The second part is the subprotocol, which is the name of the database such as derby, mysql, or postgres. The third part is the subname, which is a database-specific format. Colons (:) separate the three parts.
+
+-- See Figure 10.3 for JDBC url format --
+
+There are two main ways to get a Connection: DriverManager or DataSource. DriverManager is the one covered on the exam. Do not use a DriverManager in code someone is paying you to write. A DataSource has more features than DriverManager. For example, it can pool connections or store the database connection information outside the application.
+
+The DriverManager class is in the JDK, as it is an API that comes with Java. It uses the factory pattern, which means that you call a static method to get a Connection, rather than calling a constructor.
+
+E.g. Connection conn = DriverManager.getConnection("jdbc:derby:zoo");
+
+There is also a signature that takes a username and password.
+import java.sql.*;
+public class TestExternal {
+   public static void main(String[] args) throws SQLException {
+      Connection conn = DriverManager.getConnection(
+         "jdbc:postgresql://localhost:5432/ocp-book",
+         "username",
+         "Password20182");
+      System.out.println(conn);
+   }
+}
+
+Very important Note: If code snippets aren't in a method, you can assume they are in a context where checked exceptions are handled or declared.
+
+The nice thing about the factory pattern is that it takes care of the logic of creating a class for you. You don't need to know the name of the class that implements Connection, and you don't need to know how it is created.
+
+DriverManager looks through any drivers it can find to see whether they can handle the JDBC URL. If so, it creates a Connection using that Driver. If not, it gives up and throws a SQLException.
+
+
+WORKING WITH PREPARED STATEMENT
+-------------------------------
+A Statement and PreparedStatement are similar to each other, except that a PreparedStatement takes parameters, while a Statement does not. A Statement just executes whatever SQL query you give it. While it is possible to run SQL directly with Statement, you shouldn't. PreparedStatement is far superior for the following reasons:
+
+1. Performance: In most programs, you run similar queries multiple times. A PreparedStatement figures out a plan to run the SQL well and remembers it.
+2. Security: As you will see in Chapter 11, “Security,” you are protected against an attack called SQL injection when using a PreparedStatement correctly.
+3. Readability: It's nice not to have to deal with string concatenation in building a query string with lots of parameters.
+4. Future use: Even if your query is being run only once or doesn't have any parameters, you should still use a PreparedStatement. That way future editors of the code won't add a variable and have to remember to change to PreparedStatement then.
+
+To run SQL, you need to tell a PreparedStatement about it. Getting a PreparedStatement from a Connection is easy.
+
+try (PreparedStatement ps = conn.prepareStatement(
+   "SELECT * FROM exhibits")) {
+   // work with ps
+}
+
+Passing a SQL statement when creating the object is mandatory. You might see a trick on the exam.
+
+try (var ps = conn.prepareStatement()) { // DOES NOT COMPILE
+}
+The previous example does not compile, because SQL is not supplied at the time a PreparedStatement is requested.
+
+The way you run SQL varies depending on what kind of SQL statement it is.
+
+Let's start out with statements that change the data in a table. That would be SQL statements that begin with DELETE, INSERT, or UPDATE. They typically use a method called executeUpdate()
+
+Next, let's look at a SQL statement that begins with SELECT. This time, we use the executeQuery() method.
+
+There's a third method called execute() that can run either a query or an update. It returns a boolean so that we know whether there is a ResultSet. That way, we can call the proper method to get more detail. The pattern looks like this:
+
+boolean isResultSet = ps.execute();
+if (isResultSet) {
+   try (ResultSet rs = ps.getResultSet()) {
+      System.out.println("ran a query");
+   }
+} else {
+   int result = ps.getUpdateCount();
+   System.out.println("ran an update");
+}
+
+What do you think happens if we use the wrong method for a SQL statement? 
+
+If executeUpdate() method is called for SELECT based sql. Then it throw SQLException with following message
+Statement.executeUpdate() cannot be called with a statement that returns a ResultSet.
+
+If executeQuery() method is called for INSERT, UPDATE and DELETE based sql. Then it throw SQLExecption with following message
+Statement.executeQuery() cannot be called with a statement that returns a row count.
+
+SQL runnable by the execute method
+Method			DELETE		INSERT		SELECT		UPDATE
+----------------------------------------------------------------------------
+ps.execute()		Yes		Yes		Yes		Yes
+ps.executeQuery()	No		No		Yes		No
+ps.executeUpdate()	Yes		Yes		No		Yes
+
+Return types of execute methods
+Method			Return type		What is returned for SELECT		What is returned for DELETE/INSERT/UPDATE
+------------------------------------------------------------------------------------------------------------------------------
+ps.execute()		boolean		true					false
+ps.executeQuery()	ResultSet		The rows and columns returned		n/a
+ps.executeUpdate()	int			n/a					Number of rows added/changed/removed
+
+Luckily, a PreparedStatement allows us to set parameters. Instead of specifying the three values in the SQL, we can use a question mark (?) instead. A bind variable is a placeholder that lets you specify the actual values at runtime. A bind variable is like a parameter, and you will see bind variables referenced as both variables and parameters. We can rewrite our SQL statement using bind variables.
+
+String sql = "INSERT INTO names VALUES(?, ?, ?)";
+try (PreparedStatement ps = conn.prepareStatement(sql)) {
+       ps.setInt(1, key);
+       ps.setString(3, name);
+       ps.setInt(2, type);
+       ps.executeUpdate();
+    }
+
+Note: Remember that JDBC starts counting columns with 1 rather than 0. A common exam (and interview) question tests that you know this!
+
+The rule for bind variable is only that they are each set before the query is executed. If bind variable and not set or more than required bind variable are initialized then this will cause SQLException. Exact Exception message with depend on vendor.
+
+Table below shows the methods you need to know for the exam to set bind variables.
+Method name		Parameter type		Example database type
+--------------------------------------------------------------------
+setBoolean		Boolean		BOOLEAN
+setDouble		Double			DOUBLE
+setInt			Int			INTEGER
+setLong		Long			BIGINT
+setObject		Object			Any type
+setString		String			CHAR, VARCHAR
+
+Notice the setObject() method works with any Java type. If you pass a primitive, it will be autoboxed into a wrapper type. That means we can rewrite our example as follows:
+
+String sql = "INSERT INTO names VALUES(?, ?, ?)";
+try (PreparedStatement ps = conn.prepareStatement(sql)) {
+   ps.setObject(1, key);
+   ps.setObject(2, type);
+   ps.setObject(3, name);
+   ps.executeUpdate();
+}
+
+
+We can use same PreparedStatement object multiple time to update different records, just need to update only required fields. Old field value will be remembered by PreparedStatement object.
+
+GETTING DATA FROM A RESULTSET
+-----------------------------
+
+When working with a ResultSet, most of the time you will write a loop to look at each row. The code looks like this:
+
+20: String sql = "SELECT id, name FROM exhibits";
+21: Map<Integer, String> idToNameMap = new HashMap<>();
+22:
+23: try (var ps = conn.prepareStatement(sql);
+24:    ResultSet rs = ps.executeQuery()) {
+25:
+26:    while (rs.next()) {
+27:       int id = rs.getInt("id");
+28:       String name = rs.getString("name");
+29:       idToNameMap.put(id, name);
+30:    }
+31:    System.out.println(idToNameMap);
+32: }
+
+There is another way to access the columns. You can use an index instead of a column name. The column name is better because it is clearer what is going on when reading the code. It also allows you to change the SQL to reorder the columns.
+
+Notice how the columns are counted starting with 1 rather than 0. Just like with a PreparedStatement, JDBC starts counting at 1 in a ResultSet.
+
+It is important to check that rs.next() returns true before trying to call a getter on the ResultSet. If a query didn't return any rows, it would throw a SQLException, so the if statement checks that it is safe to call.
+
+if (rs.next()) {
+  int count = rs.getInt(1);
+  System.out.println(count);
+}
+
+Attempting to access a column name or index that does not exist throws a SQLException, as does getting data from a ResultSet when it isn't pointing at a valid row. 
+
+To sum up this section, it is important to remember the following:
+
+1. Always use an if statement or while loop when calling rs.next().
+2. Column indexes begin with 1.
+
+ResultSet get methods
+Method name		Return type
+----------------------------------
+getBoolean		boolean
+getDouble		double
+getInt			int
+getLong		long
+getObject		Object
+getString		String
+
+The getObject() method can return any type. For a primitive, it uses the wrapper class.
+
+We've been creating the PreparedStatement and ResultSet in the same try-with-resources statement. This doesn't work if you have bind variables because they need to be set in between. Luckily, we can nest try-with-resources to handle this. This code prints out the ID for any exhibits matching a given name:
+
+30: var sql = "SELECT id FROM exhibits WHERE name = ?";
+31:
+32: try (var ps = conn.prepareStatement(sql)) {
+33:    ps.setString(1, "Zebra");
+34: 
+35:    try (var rs = ps.executeQuery()) {
+36:       while (rs.next()) {
+37:          int id = rs.getInt("id");
+38:          System.out.println(id);
+39:       }
+40:    }
+41: }
+
+CALLING A CALLABLESTATEMENT
+---------------------------
+
+Sample stored procedures
+
+Name			Parameter name		Parameter type		Description
+---------------------------------------------------------------------------------------------------------------------------------------------------
+read_e_names()		n/a			n/a			Returns all rows in the names table that have a name beginning with an E
+read_names_by_letter()	prefix			IN			Returns all rows in the names table that have a name beginning with the specified 										parameter
+magic_number()		Num			OUT			Returns the number 42
+double_number()	Num			INOUT			Multiplies the parameter by two and returns that number
+
+Our read_e_names() stored procedure doesn't take any parameters. It does return a ResultSet. Since we worked with a ResultSet in the PreparedStatement section, here we can focus on how the stored procedure is called.
+
+12: String sql = "{call read_e_names()}";
+13: try (CallableStatement cs = conn.prepareCall(sql);
+14:    ResultSet rs = cs.executeQuery()) {
+15:
+16:    while (rs.next()) {
+17:       System.out.println(rs.getString(3));
+18:    }
+19: }
+
+Line 13 creates a CallableStatement object. When we created a PreparedStatement, we used the prepareStatement() method. Here, we use the prepareCall() method instead.
+
+This stored procedure returns the underlying table, so the columns are the same.
+
+The read_names_by_letter() stored procedure takes a parameter for the prefix or first letter of the stored procedure. An IN parameter is used for input.
+
+There are two differences in calling it compared to our previous stored procedure.
+
+25: var sql = "{call read_names_by_letter(?)}";
+26: try (var cs = conn.prepareCall(sql)) {
+27:    cs.setString("prefix", "Z");
+28:
+29:    try (var rs = cs.executeQuery()) {
+30:       while (rs.next()) {
+31:          System.out.println(rs.getString(3));
+32:       }
+33:    }
+34: }
+
+Unlike with PreparedStatement, we can use either the parameter number (starting with 1) or the parameter name. That means these two statements are equivalent:
+
+cs.setString(1, "Z");
+cs.setString("prefix", "Z");
+
+The magic_number() stored procedure sets its OUT parameter to 42. There are a few differences here:
+
+40: var sql = "{?= call magic_number(?) }";
+41: try (var cs = conn.prepareCall(sql)) {
+42:    cs.registerOutParameter(1, Types.INTEGER);
+43:    cs.execute();
+44:    System.out.println(cs.getInt("num"));
+45: }
+
+On line 42, we register the OUT parameter. This is important. It allows JDBC to retrieve the value on line 44. Remember to always call registerOutParameter() for each OUT or INOUT parameter (which we will cover next).
+
+On line 43, we call execute() instead of executeQuery() since we are not returning a ResultSet from our stored procedure.
+
+Note: For the exam, you need to answer according to the full requirements, which are described in this book. For example, you should answer exam questions as if braces are required.
+
+Finally, it is possible to use the same parameter for both input and output. As you read this code, see whether you can spot which lines are required for the IN part and which are required for the OUT part.
+
+50: var sql = "{call double_number(?)}";
+51: try (var cs = conn.prepareCall(sql)) {
+52:    cs.setInt(1, 8);
+53:    cs.registerOutParameter(1, Types.INTEGER);
+54:    cs.execute();
+55:    System.out.println(cs.getInt("num"));
+56: }
+
+For an IN parameter, line 50 is required since it passes the parameter. Similarly, line 52 is required since it sets the parameter. For an OUT parameter, line 53 is required to register the parameter. Line 54 uses execute() again because we are not returning a ResultSet.
+
+Stored procedure parameter types
+					IN	OUT	INOUT
+-----------------------------------------------------------
+Used for input				Yes	No	Yes
+Used for output			No	Yes	Yes
+Must set parameter value		Yes	No	Yes
+Must call registerOutParameter()	No	Yes	Yes
+Can include ?=				No	Yes	Yes
+
+CLOSING DATABASE RESOURCES
+--------------------------
+
+While it is a good habit to close all three resources, it isn't strictly necessary. Closing a JDBC resource should close any resources that it created. In particular, the following are true:
+1. Closing a Connection also closes PreparedStatement (or CallableStatement) and ResultSet.
+2. Closing a PreparedStatement (or CallableStatement) also closes the ResultSet.
+
+It is important to close resources in the right order. This avoids both resource leaks and exceptions.
+
+There's another way to close a ResultSet. JDBC automatically closes a ResultSet when you run another SQL statement from the same Statement. This could be a PreparedStatement or a CallableStatement.
+
+It is important to close JDBC resources when finished with them to avoid leaking resources. Closing a Connection automatically closes the Statement and ResultSet objects. Closing a Statement automatically closes the ResultSet object. Also, running another SQL statement closes the previous ResultSet object from that Statement.
