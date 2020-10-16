@@ -1,0 +1,44 @@
+1. B, F --CORRECT--
+
+2. A, B, C, E, F --INCORRECT--
+
+3. A --CORRECT--
+
+4. B, C, D, F --INCORRECT--
+--DOUBT WITH C AND F--
+
+5. C --CORRECT--
+
+6. B --CORRECT--
+
+7. A, B, E --CORRECT--
+
+8. C --CORRECT--
+
+9. A, B --CORRECT--
+
+10. B --INCORRECT--
+
+11. D --CORRECT-- 
+
+12. D --CORRECT--
+
+13. C --CORRECT--
+
+14. B, F --CORRECT--
+
+15. C --CORRECT--
+
+16. E --CORRECT--
+
+17. D --CORRECT-- 
+
+18. B --INCORRECT--
+
+19. E --CORRECT--
+
+20. E --CORRECT--
+
+21. B --CORRECT--
+
+(17/21) = 80.95%

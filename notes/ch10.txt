@@ -1,6 +1,6 @@
 INTRODUCING RELATIONAL DATABASES AND SQL
 ----------------------------------------
-here are two main ways to access a relational database from Java.
+There are two main ways to access a relational database from Java.
 
 1. Java Database Connectivity Language (JDBC): Accesses data as rows and columns. JDBC is the API covered in this chapter.
 2. Java Persistence API (JPA): Accesses data through Java objects using a concept called object-relational mapping (ORM). The idea is that you don't have to write as much code, and you get your data in Java objects. JPA is not on the exam, and therefore it is not covered in this chapter.
@@ -241,7 +241,7 @@ getString		String
 
 The getObject() method can return any type. For a primitive, it uses the wrapper class.
 
-We've been creating the PreparedStatement and ResultSet in the same try-with-resources statement. This doesn't work if you have bind variables because they need to be set in between. Luckily, we can nest try-with-resources to handle this. This code prints out the ID for any exhibits matching a given name:
+We've been creating the PreparedStatement and ResultSet in the same try-with-resources statement. This doesn't work if you have bind variables because they need to be set in between. Luckily, we can nested try-with-resources to handle this. This code prints out the ID for any exhibits matching a given name:
 
 30: var sql = "SELECT id FROM exhibits WHERE name = ?";
 31:
