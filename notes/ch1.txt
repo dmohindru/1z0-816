@@ -76,7 +76,7 @@ Enums can have more in them than just a list of values. e.g
 
 Enum can contain Constructor, Fields and Methods
 
-When an enum contains any other members, such as a constructor or variable, then semiconductor it is required.
+When an enum contains any other members, such as a constructor or variable, then semicolon is required.
 
 We mark the instance variable final although this is certainly not required, it is considered a good coding practice to do so. 
 
