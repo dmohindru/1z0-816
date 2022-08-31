@@ -8,7 +8,7 @@ So if annotations function like interfaces, why don't we just use interfaces? Wh
 
 That brings us to our second rule about annotations: annotations establish relationships that make it easier to manage data about our application. Sure, we could write applications without annotations, but that often requires creating a lot of extra classes, interfaces, or data files (XML, JSON, etc.) to manage these complex relationships. 
 
-This brings us to our third rule about annotations: an annotation ascribes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
+This brings us to our third rule about annotations: an annotation describes custom information on the declaration where it is defined. This turns out to be a powerful tool, as the same annotation can often be applied to completely unrelated classes or variables.
 
 There's one final rule about annotations you should be familiar with: annotations are optional metadata and by themselves do not do anything. This means you can take a project filled with thousands of annotations and remove all of them, and it will still compile and run, albeit with potentially different behavior at runtime.
 
