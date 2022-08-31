@@ -1,4 +1,4 @@
-package dev.dmohindru.interfacemembers;
+package dev.dmohindru.ch1.interfacemembers;
 
 public interface Runable {
     // Different examples of declaring static variables in an interface

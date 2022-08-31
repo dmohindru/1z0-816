@@ -1,4 +1,4 @@
-package dev.dmohindru.enums;
+package dev.dmohindru.ch1.enums;
 
 public enum Seasons {
     WINTER(100, "Less"){

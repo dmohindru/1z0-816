@@ -1,4 +1,4 @@
-package dev.dmohindru.innerclass;
+package dev.dmohindru.ch1.innerclass;
 
 public class LocalClassDemo {
     private int length = 5;

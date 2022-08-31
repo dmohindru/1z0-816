@@ -1,4 +1,4 @@
-package dev.dmohindru.functionalinterfaces;
+package dev.dmohindru.ch1.functionalinterfaces;
 
 @FunctionalInterface
 public interface ExampleOne {

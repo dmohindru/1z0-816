@@ -1,4 +1,4 @@
-package dev.dmohindru.interfacemembers;
+package dev.dmohindru.ch1.interfacemembers;
 
 public interface Walkable {
     static String name = "Walkable Interface";

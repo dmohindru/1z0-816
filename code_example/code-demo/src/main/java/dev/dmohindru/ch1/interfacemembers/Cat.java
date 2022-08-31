@@ -1,4 +1,4 @@
-package dev.dmohindru.interfacemembers;
+package dev.dmohindru.ch1.interfacemembers;
 
 public class Cat implements Runable, Walkable {
     public static void main(String[] args) {

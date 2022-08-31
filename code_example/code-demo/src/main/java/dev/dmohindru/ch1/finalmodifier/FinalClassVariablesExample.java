@@ -1,4 +1,4 @@
-package dev.dmohindru.finalmodifier;
+package dev.dmohindru.ch1.finalmodifier;
 
 public class FinalClassVariablesExample {
     final int instanceVariable;

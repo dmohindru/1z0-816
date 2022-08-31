@@ -1,4 +1,4 @@
-package dev.dmohindru.finalmodifier;
+package dev.dmohindru.ch1.finalmodifier;
 
 public class FinalMethodExample {
     final public void hello() {

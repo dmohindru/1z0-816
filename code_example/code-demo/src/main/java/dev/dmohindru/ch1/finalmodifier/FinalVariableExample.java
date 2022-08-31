@@ -1,4 +1,4 @@
-package dev.dmohindru.finalmodifier;
+package dev.dmohindru.ch1.finalmodifier;
 
 import java.util.ArrayList;
 import java.util.List;

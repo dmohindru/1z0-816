@@ -1,4 +1,4 @@
-package dev.dmohindru.finalmodifier;
+package dev.dmohindru.ch1.finalmodifier;
 
 public abstract class FinalAbstractClassExample {
     abstract void functionOne();
