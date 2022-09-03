@@ -1,4 +1,4 @@
-USING METHOD REFERENCES
+ USING METHOD REFERENCES
 ------------------------
 Remember that :: is like a lambda, and it is used for deferred execution with a functional interface.
 
